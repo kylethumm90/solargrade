@@ -1,5 +1,5 @@
--- Add logo_url column to companies table
-ALTER TABLE companies ADD COLUMN IF NOT EXISTS logo_url text;
+-- Add logo_url column to vendors table (called "companies" in app code)
+ALTER TABLE vendors ADD COLUMN IF NOT EXISTS logo_url text;
 
 -- Create a storage bucket for company logos (run in Supabase dashboard or via API)
 -- INSERT INTO storage.buckets (id, name, public) VALUES ('company-logos', 'company-logos', true);
