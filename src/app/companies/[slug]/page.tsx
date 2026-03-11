@@ -3,6 +3,7 @@ import { getRatingFields, getAverageRating } from '@/lib/constants'
 import { CategoryBadge } from '@/components/CategoryBadge'
 import { StarRating } from '@/components/StarRating'
 import { SocialLinks } from '@/components/SocialLinks'
+import { CompanyLogo } from '@/components/CompanyLogo'
 import { Company, Review } from '@/lib/types'
 import { notFound } from 'next/navigation'
 
@@ -46,9 +47,17 @@ export default async function CompanyDetailPage({ params }: { params: { slug: st
     <div className="max-w-4xl mx-auto px-4 py-12">
       {/* Header */}
       <div className="mb-8">
-        <div className="flex items-center gap-3 mb-2">
-          <h1 className="text-3xl font-bold text-[#1e293b]">{typedCompany.name}</h1>
-          <CategoryBadge category={typedCompany.category} />
+        <div className="flex items-center gap-4 mb-2">
+          <CompanyLogo
+            name={typedCompany.name}
+            logoUrl={typedCompany.logo_url}
+            category={typedCompany.category}
+            size="lg"
+          />
+          <div className="flex items-center gap-3 flex-wrap">
+            <h1 className="text-3xl font-bold text-[#1e293b]">{typedCompany.name}</h1>
+            <CategoryBadge category={typedCompany.category} />
+          </div>
         </div>
         {typedCompany.description && (
           <p className="text-[#64748b] mb-3">{typedCompany.description}</p>

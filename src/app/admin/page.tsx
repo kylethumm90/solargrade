@@ -1,9 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { supabase } from '@/lib/supabase'
 import { getCategoryLabel, getCategoryColor, getRatingFields, CATEGORIES } from '@/lib/constants'
 import { StarRating } from '@/components/StarRating'
+import { CompanyLogo } from '@/components/CompanyLogo'
 import { PendingCompany, PendingReview, Company, ReviewWithCompany } from '@/lib/types'
 
 const ADMIN_PASSWORD = 'solargrade2026'
@@ -33,6 +34,34 @@ export default function AdminPage() {
   const [editingReview, setEditingReview] = useState<ReviewWithCompany | null>(null)
 
   const [loading, setLoading] = useState(false)
+  const [uploadingLogo, setUploadingLogo] = useState(false)
+  const logoInputRef = useRef<HTMLInputElement>(null)
+
+  async function handleLogoUpload(file: File, companyId: string) {
+    setUploadingLogo(true)
+    try {
+      const ext = file.name.split('.').pop()?.toLowerCase() || 'png'
+      const path = `${companyId}.${ext}`
+
+      // Upload to Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from('company-logos')
+        .upload(path, file, { upsert: true })
+
+      if (uploadError) {
+        alert('Failed to upload logo: ' + uploadError.message)
+        return null
+      }
+
+      const { data: urlData } = supabase.storage
+        .from('company-logos')
+        .getPublicUrl(path)
+
+      return urlData.publicUrl
+    } finally {
+      setUploadingLogo(false)
+    }
+  }
 
   function handleLogin(e: React.FormEvent) {
     e.preventDefault()
@@ -175,6 +204,7 @@ export default function AdminPage() {
         category: editingCompany.category,
         website: editingCompany.website,
         description: editingCompany.description,
+        logo_url: editingCompany.logo_url,
         facebook_url: editingCompany.facebook_url,
         instagram_url: editingCompany.instagram_url,
         linkedin_url: editingCompany.linkedin_url,
@@ -467,6 +497,51 @@ export default function AdminPage() {
                             />
                           </div>
                           <div className="border-t border-[#e2e8f0] pt-4">
+                            <label className="block text-sm font-medium text-[#1e293b] mb-2">Company Logo</label>
+                            <div className="flex items-center gap-4 mb-4">
+                              <CompanyLogo
+                                name={editingCompany.name}
+                                logoUrl={editingCompany.logo_url}
+                                category={editingCompany.category}
+                                size="lg"
+                              />
+                              <div className="flex flex-col gap-2">
+                                <input
+                                  ref={logoInputRef}
+                                  type="file"
+                                  accept="image/*"
+                                  className="hidden"
+                                  onChange={async (e) => {
+                                    const file = e.target.files?.[0]
+                                    if (!file) return
+                                    const url = await handleLogoUpload(file, editingCompany.id)
+                                    if (url) {
+                                      setEditingCompany({ ...editingCompany, logo_url: url })
+                                    }
+                                    e.target.value = ''
+                                  }}
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => logoInputRef.current?.click()}
+                                  disabled={uploadingLogo}
+                                  className="px-3 py-1.5 bg-amber-500 text-white text-sm rounded-lg hover:bg-amber-400 transition-colors disabled:opacity-50"
+                                >
+                                  {uploadingLogo ? 'Uploading...' : 'Upload Logo'}
+                                </button>
+                                {editingCompany.logo_url && (
+                                  <button
+                                    type="button"
+                                    onClick={() => setEditingCompany({ ...editingCompany, logo_url: null })}
+                                    className="px-3 py-1.5 bg-red-100 text-red-600 text-sm rounded-lg hover:bg-red-200 transition-colors"
+                                  >
+                                    Remove
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="border-t border-[#e2e8f0] pt-4">
                             <label className="block text-sm font-medium text-[#1e293b] mb-3">Social Links</label>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                               {([
@@ -510,14 +585,17 @@ export default function AdminPage() {
                         /* ---- Display mode ---- */
                         <>
                           <div className="flex items-start justify-between mb-2">
-                            <div>
-                              <h3 className="font-semibold text-[#1e293b] text-lg">{v.name}</h3>
-                              <span
-                                className="inline-block text-xs font-medium text-white px-2 py-0.5 rounded-full mt-1"
-                                style={{ backgroundColor: getCategoryColor(v.category) }}
-                              >
-                                {getCategoryLabel(v.category)}
-                              </span>
+                            <div className="flex items-center gap-3">
+                              <CompanyLogo name={v.name} logoUrl={v.logo_url} category={v.category} size="md" />
+                              <div>
+                                <h3 className="font-semibold text-[#1e293b] text-lg">{v.name}</h3>
+                                <span
+                                  className="inline-block text-xs font-medium text-white px-2 py-0.5 rounded-full mt-1"
+                                  style={{ backgroundColor: getCategoryColor(v.category) }}
+                                >
+                                  {getCategoryLabel(v.category)}
+                                </span>
+                              </div>
                             </div>
                             <span className="text-xs text-[#64748b]">
                               {new Date(v.created_at).toLocaleDateString()}

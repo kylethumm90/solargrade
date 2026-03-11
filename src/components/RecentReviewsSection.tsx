@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { StarRating } from '@/components/StarRating'
+import { CompanyLogo } from '@/components/CompanyLogo'
 import { ThumbsUp, ThumbsDown } from 'lucide-react'
 
 type RecentReview = {
@@ -12,6 +13,8 @@ type RecentReview = {
   created_at: string
   company_name: string
   company_slug: string
+  company_logo_url?: string | null
+  company_category?: string
   avg_rating: number
 }
 
@@ -115,9 +118,19 @@ export function RecentReviewsSection({ reviews }: { reviews: RecentReview[] }) {
               className="shrink-0 w-[300px] p-4 rounded-xl bg-[#f8fafc] border border-[#e2e8f0] hover:border-amber-500/30 hover:shadow-md hover:-translate-y-1 transition-all duration-200 cursor-pointer block"
             >
               <div className="flex items-center justify-between mb-2">
-                <span className="font-bold text-[#1e293b] text-sm truncate mr-2">
-                  {review.company_name}
-                </span>
+                <div className="flex items-center gap-2 min-w-0 mr-2">
+                  {review.company_category && (
+                    <CompanyLogo
+                      name={review.company_name}
+                      logoUrl={review.company_logo_url}
+                      category={review.company_category}
+                      size="sm"
+                    />
+                  )}
+                  <span className="font-bold text-[#1e293b] text-sm truncate">
+                    {review.company_name}
+                  </span>
+                </div>
                 {showRecommend && (
                   <span className="shrink-0">
                     {wouldRecommend >= 4 ? (

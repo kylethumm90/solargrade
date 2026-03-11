@@ -9,6 +9,7 @@ create table companies (
   category text not null check (category in ('installers', 'leads', 'crm', 'callcenter', 'financing', 'software')),
   website text,
   description text,
+  logo_url text,
   facebook_url text,
   instagram_url text,
   linkedin_url text,

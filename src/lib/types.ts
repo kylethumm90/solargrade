@@ -5,6 +5,7 @@ export interface Company {
   category: string
   website: string | null
   description: string | null
+  logo_url: string | null
   facebook_url: string | null
   instagram_url: string | null
   linkedin_url: string | null

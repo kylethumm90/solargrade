@@ -4,12 +4,14 @@ import { useState } from 'react'
 import { CATEGORIES } from '@/lib/constants'
 import { CategoryBadge } from '@/components/CategoryBadge'
 import { StarRating } from '@/components/StarRating'
+import { CompanyLogo } from '@/components/CompanyLogo'
 
 type RatedCompany = {
   id: string
   slug: string
   name: string
   category: string
+  logo_url?: string | null
   avg_rating: number
   review_count: number
 }
@@ -65,6 +67,12 @@ export function TopRatedSection({ companies }: { companies: RatedCompany[] }) {
               <span className="text-2xl font-bold text-[#64748b] w-8 text-center">
                 {i + 1}
               </span>
+              <CompanyLogo
+                name={company.name}
+                logoUrl={company.logo_url}
+                category={company.category}
+                size="sm"
+              />
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="font-semibold text-[#1e293b]">{company.name}</span>

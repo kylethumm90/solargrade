@@ -53,13 +53,13 @@ async function getRecentReviews() {
   const companyIds = Array.from(new Set(reviews.map((r: Review) => r.company_id)))
   const { data: companies } = await supabase
     .from('companies')
-    .select('id, name, slug')
+    .select('id, name, slug, logo_url, category')
     .in('id', companyIds)
     .eq('approved', true)
 
   if (!companies) return []
 
-  const companyMap = new Map(companies.map((c: { id: string; name: string; slug: string }) => [c.id, c]))
+  const companyMap = new Map(companies.map((c: { id: string; name: string; slug: string; logo_url: string | null; category: string }) => [c.id, c]))
 
   return reviews
     .filter((r: Review) => companyMap.has(r.company_id))
@@ -73,6 +73,8 @@ async function getRecentReviews() {
         created_at: r.created_at,
         company_name: company.name,
         company_slug: company.slug,
+        company_logo_url: company.logo_url,
+        company_category: company.category,
         avg_rating: getAverageRating(r.ratings),
       }
     })
