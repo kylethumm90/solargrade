@@ -137,6 +137,11 @@ export default async function CompanyDetailPage({ params }: { params: { slug: st
                       {review.relationship}
                     </span>
                   )}
+                  {review.tenure && (
+                    <span className="inline-block text-xs font-medium bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">
+                      {review.tenure}
+                    </span>
+                  )}
                   {review.company && (
                     <span className="text-[#64748b] text-sm">at {review.company}</span>
                   )}

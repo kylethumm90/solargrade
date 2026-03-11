@@ -120,6 +120,7 @@ export default function AdminPage() {
       reviewer_name: pr.reviewer_name,
       company: pr.company,
       relationship: pr.relationship,
+      tenure: pr.tenure,
       ratings: pr.ratings,
       review_text: pr.review_text,
     })
@@ -212,6 +213,7 @@ export default function AdminPage() {
         reviewer_name: editingReview.reviewer_name,
         company: editingReview.company,
         relationship: editingReview.relationship,
+        tenure: editingReview.tenure,
         review_text: editingReview.review_text,
         ratings: editingReview.ratings,
       })
@@ -367,6 +369,11 @@ export default function AdminPage() {
                                 {pr.relationship && (
                                   <span className="inline-block text-xs font-medium bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full ml-2">
                                     {pr.relationship}
+                                  </span>
+                                )}
+                                {pr.tenure && (
+                                  <span className="inline-block text-xs font-medium bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full ml-2">
+                                    {pr.tenure}
                                   </span>
                                 )}
                                 {pr.company && ` at ${pr.company}`}
@@ -603,6 +610,15 @@ export default function AdminPage() {
                               />
                             </div>
                             <div>
+                              <label className="block text-sm font-medium text-[#1e293b] mb-1">Tenure</label>
+                              <input
+                                type="text"
+                                value={editingReview.tenure || ''}
+                                onChange={(e) => setEditingReview({ ...editingReview, tenure: e.target.value || null })}
+                                className="w-full bg-white border border-[#e2e8f0] text-[#1e293b] rounded-lg px-3 py-2 text-sm"
+                              />
+                            </div>
+                            <div>
                               <label className="block text-sm font-medium text-[#1e293b] mb-2">Ratings</label>
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                 {ratingFields.map((field) => (
@@ -663,6 +679,11 @@ export default function AdminPage() {
                                   {r.relationship && (
                                     <span className="inline-block text-xs font-medium bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full ml-2">
                                       {r.relationship}
+                                    </span>
+                                  )}
+                                  {r.tenure && (
+                                    <span className="inline-block text-xs font-medium bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full ml-2">
+                                      {r.tenure}
                                     </span>
                                   )}
                                   {r.company && ` at ${r.company}`}

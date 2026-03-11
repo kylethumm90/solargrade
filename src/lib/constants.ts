@@ -69,6 +69,16 @@ export const INSTALLER_RELATIONSHIPS = [
 
 export type InstallerRelationship = (typeof INSTALLER_RELATIONSHIPS)[number]
 
+export const TENURE_OPTIONS = [
+  'Less than 1 year',
+  '1-3 years',
+  '3-5 years',
+  '5-10 years',
+  '10+ years',
+] as const
+
+export type Tenure = (typeof TENURE_OPTIONS)[number]
+
 export function getAverageRating(ratings: Record<string, number>): number {
   const values = Object.values(ratings)
   if (values.length === 0) return 0

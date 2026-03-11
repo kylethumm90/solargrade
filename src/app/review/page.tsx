@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
-import { CATEGORIES, getRatingFields, INSTALLER_RELATIONSHIPS } from '@/lib/constants'
+import { CATEGORIES, getRatingFields, INSTALLER_RELATIONSHIPS, TENURE_OPTIONS } from '@/lib/constants'
 import { StarInput } from '@/components/StarRating'
 import { Company } from '@/lib/types'
 
@@ -14,6 +14,7 @@ export default function ReviewPage() {
   const [reviewText, setReviewText] = useState('')
   const [ratings, setRatings] = useState<Record<string, number>>({})
   const [relationship, setRelationship] = useState('')
+  const [tenure, setTenure] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState('')
@@ -45,6 +46,7 @@ export default function ReviewPage() {
   useEffect(() => {
     setRatings({})
     setRelationship('')
+    setTenure('')
   }, [selectedCompany])
 
   async function handleSubmit(e: React.FormEvent) {
@@ -73,6 +75,7 @@ export default function ReviewPage() {
       reviewer_name: reviewerName,
       company: company || null,
       relationship: isInstaller ? relationship : null,
+      tenure: tenure || null,
       ratings,
       review_text: reviewText,
     })
@@ -181,6 +184,25 @@ export default function ReviewPage() {
             </select>
           </div>
         )}
+
+        {/* Tenure */}
+        <div>
+          <label className="block text-sm font-medium text-[#1e293b] mb-2">
+            Industry Tenure (optional)
+          </label>
+          <select
+            value={tenure}
+            onChange={(e) => setTenure(e.target.value)}
+            className="w-full bg-white border border-[#e2e8f0] text-[#1e293b] rounded-lg px-4 py-3"
+          >
+            <option value="">How long in solar?</option>
+            {TENURE_OPTIONS.map((opt) => (
+              <option key={opt} value={opt}>
+                {opt}
+              </option>
+            ))}
+          </select>
+        </div>
 
         {/* Name */}
         <div>
