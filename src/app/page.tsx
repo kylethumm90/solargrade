@@ -25,7 +25,7 @@ async function getTopCompanies() {
 
   const { data: reviews } = await supabase.from('reviews').select('*')
 
-  if (!companies || !reviews) return []
+  if (!companies || !reviews) return { ranked: [], allCompanies: companies || [], allReviews: reviews || [] }
 
   const companyMap = companies.map((company: Company) => {
     const companyReviews = reviews.filter((r: Review) => r.company_id === company.id)
@@ -37,9 +37,11 @@ async function getTopCompanies() {
     return { ...company, avg_rating: avgRating, review_count: companyReviews.length }
   })
 
-  return companyMap
+  const ranked = companyMap
     .filter((v) => v.review_count > 0)
     .sort((a, b) => b.avg_rating - a.avg_rating)
+
+  return { ranked, allCompanies: companies, allReviews: reviews }
 }
 
 async function getRecentReviews() {
@@ -80,25 +82,38 @@ async function getRecentReviews() {
 }
 
 export default async function HomePage() {
-  const [topCompanies, recentReviews] = await Promise.all([
+  const [{ ranked: topCompanies, allCompanies, allReviews }, recentReviews] = await Promise.all([
     getTopCompanies(),
     getRecentReviews(),
   ])
 
+  const companyCount = allCompanies.length
+  const reviewCount = allReviews.length
+  const categoryCount = CATEGORIES.length
+
+  // Count companies per category
+  const categoryCounts: Record<string, number> = {}
+  for (const company of allCompanies) {
+    categoryCounts[company.category] = (categoryCounts[company.category] || 0) + 1
+  }
+
   return (
     <div>
-      {/* Hero */}
-      <section className="py-20 px-4 text-center">
+      {/* Hero - Compact */}
+      <section className="pt-12 pb-8 px-4 text-center">
         <div className="max-w-3xl mx-auto">
-          <span className="inline-block px-3 py-1 text-xs font-semibold bg-amber-500/20 text-amber-600 rounded-full uppercase tracking-wider mb-6">
+          <span className="inline-block px-3 py-1 text-xs font-semibold bg-amber-500/20 text-amber-600 rounded-full uppercase tracking-wider mb-4">
             Beta
           </span>
-          <h1 className="text-5xl font-bold text-[#1e293b] mb-4">
+          <h1 className="text-5xl font-bold text-[#1e293b] mb-3">
             Stop guessing. <span className="text-amber-500">Start grading.</span>
           </h1>
-          <p className="text-lg text-[#64748b] mb-8 max-w-2xl mx-auto">
+          <p className="text-lg text-[#64748b] mb-3 max-w-2xl mx-auto">
             The solar industry&apos;s first transparent review platform. Real ratings from real
             professionals on the installers, lead companies, and tools that actually deliver.
+          </p>
+          <p className="text-sm text-[#94a3b8] mb-6">
+            Ratings are 100% based on real reviews. They can&apos;t be bought.
           </p>
           <div className="flex gap-4 justify-center">
             <a
@@ -117,15 +132,35 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* Stats Row */}
+      <section className="max-w-4xl mx-auto px-4 py-6">
+        <div className="flex items-center justify-center gap-8 md:gap-12 text-center">
+          <div>
+            <span className="text-2xl font-bold text-[#1e293b]">{companyCount}+</span>
+            <p className="text-xs text-[#94a3b8] mt-0.5">Companies Listed</p>
+          </div>
+          <div className="w-px h-8 bg-[#e2e8f0]" />
+          <div>
+            <span className="text-2xl font-bold text-[#1e293b]">{categoryCount}</span>
+            <p className="text-xs text-[#94a3b8] mt-0.5">Categories</p>
+          </div>
+          <div className="w-px h-8 bg-[#e2e8f0]" />
+          <div>
+            <span className="text-2xl font-bold text-[#1e293b]">{reviewCount}</span>
+            <p className="text-xs text-[#94a3b8] mt-0.5">Reviews</p>
+          </div>
+        </div>
+      </section>
+
       {/* Categories */}
-      <section className="max-w-6xl mx-auto px-4 py-12">
+      <section className="max-w-6xl mx-auto px-4 py-8">
         <h2 className="text-2xl font-bold text-[#1e293b] mb-6">Browse by Category</h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {CATEGORIES.map((cat) => (
             <a
               key={cat.value}
               href={`/companies?category=${cat.value}`}
-              className="group p-6 rounded-xl bg-[#f8fafc] border border-[#e2e8f0] hover:border-amber-500/30 transition-all duration-200"
+              className="group p-5 rounded-xl bg-[#f8fafc] border border-[#e2e8f0] hover:border-amber-500/30 transition-all duration-200"
             >
               <div
                 className="w-10 h-10 rounded-lg flex items-center justify-center mb-3"
@@ -133,9 +168,12 @@ export default async function HomePage() {
               >
                 {CATEGORY_ICONS[cat.value]}
               </div>
-              <h3 className="font-semibold text-[#1e293b] group-hover:text-amber-500 transition-colors">
+              <h3 className="font-semibold text-[#1e293b] group-hover:text-amber-500 transition-colors text-sm">
                 {cat.label}
               </h3>
+              <p className="text-xs text-[#94a3b8] mt-1">
+                {categoryCounts[cat.value] || 0} {(categoryCounts[cat.value] || 0) === 1 ? 'company' : 'companies'}
+              </p>
             </a>
           ))}
         </div>
@@ -147,7 +185,7 @@ export default async function HomePage() {
       {/* Recent Reviews */}
       {recentReviews.length >= 5 && <RecentReviewsSection reviews={recentReviews} />}
 
-      {/* CTA */}
+      {/* CTA - Bottom */}
       <section className="max-w-6xl mx-auto px-4 py-16">
         <div className="border-t border-amber-500/30 pt-16">
           <div
