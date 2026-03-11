@@ -50,7 +50,7 @@ async function getRecentReviews() {
 
   if (!reviews || reviews.length < 5) return []
 
-  const companyIds = [...new Set(reviews.map((r: Review) => r.company_id))]
+  const companyIds = Array.from(new Set(reviews.map((r: Review) => r.company_id)))
   const { data: companies } = await supabase
     .from('companies')
     .select('id, name, slug')
