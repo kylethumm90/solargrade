@@ -5,6 +5,7 @@ export const CATEGORIES = [
   { value: 'callcenter', label: 'Call Centers', color: '#10b981' },
   { value: 'financing', label: 'Financing', color: '#ec4899' },
   { value: 'software', label: 'Software Tools', color: '#6366f1' },
+  { value: 'salesorg', label: 'Sales Organizations', color: '#f97316' },
 ] as const
 
 export type Category = (typeof CATEGORIES)[number]['value']
@@ -45,10 +46,20 @@ export const SOFTWARE_RATINGS = [
   { key: 'reliability', label: 'Reliability' },
 ] as const
 
+export const SALES_ORG_RATINGS = [
+  { key: 'leadQuality', label: 'Lead Quality' },
+  { key: 'closingSupport', label: 'Closing Support' },
+  { key: 'compensation', label: 'Compensation / Pay Structure' },
+  { key: 'training', label: 'Training & Onboarding' },
+  { key: 'communication', label: 'Communication' },
+  { key: 'wouldRecommend', label: 'Would Recommend' },
+] as const
+
 export function getRatingFields(category: string) {
   if (category === 'installers') return INSTALLER_RATINGS
   if (category === 'crm') return CRM_RATINGS
   if (category === 'software') return SOFTWARE_RATINGS
+  if (category === 'salesorg') return SALES_ORG_RATINGS
   return VENDOR_RATINGS
 }
 
