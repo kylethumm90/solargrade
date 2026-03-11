@@ -29,7 +29,7 @@ export default function SubmitPage() {
       .replace(/\s+/g, '-')
       .replace(/-+/g, '-')
 
-    const { error: submitError } = await supabase.from('companies').insert({
+    const { error: submitError } = await supabase.from('vendors').insert({
       slug,
       name,
       category,

@@ -18,7 +18,7 @@ export const revalidate = 60
 
 async function getTopCompanies() {
   const { data: companies } = await supabase
-    .from('companies')
+    .from('vendors')
     .select('*')
     .eq('approved', true)
 
@@ -52,7 +52,7 @@ async function getRecentReviews() {
 
   const companyIds = Array.from(new Set(reviews.map((r: Review) => r.company_id)))
   const { data: companies } = await supabase
-    .from('companies')
+    .from('vendors')
     .select('id, name, slug, logo_url, category')
     .in('id', companyIds)
     .eq('approved', true)
