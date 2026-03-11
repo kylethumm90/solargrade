@@ -13,8 +13,8 @@ export const INSTALLER_RATINGS = [
   { key: 'payReliability', label: 'Payment Reliability' },
   { key: 'communication', label: 'Communication' },
   { key: 'installQuality', label: 'Install Quality' },
-  { key: 'warrantySupport', label: 'Warranty Support' },
-  { key: 'transparency', label: 'Transparency' },
+  { key: 'customerSupport', label: 'Customer Support' },
+  { key: 'installSpeed', label: 'Install Speed' },
   { key: 'wouldRecommend', label: 'Would Recommend' },
 ] as const
 
