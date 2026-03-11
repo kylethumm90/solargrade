@@ -9,6 +9,13 @@ create table companies (
   category text not null check (category in ('installers', 'leads', 'crm', 'callcenter', 'financing', 'software')),
   website text,
   description text,
+  facebook_url text,
+  instagram_url text,
+  linkedin_url text,
+  youtube_url text,
+  tiktok_url text,
+  twitter_url text,
+  website_url text,
   approved boolean default true,
   created_at timestamptz default now()
 );
