@@ -188,10 +188,12 @@ export default function AdminPage() {
       })
       .eq('id', editingCompany.id)
 
-    if (!error) {
-      setEditingCompany(null)
-      loadCompanies()
+    if (error) {
+      alert(`Failed to save: ${error.message}`)
+      return
     }
+    setEditingCompany(null)
+    loadCompanies()
   }
 
   async function deleteCompany(id: string) {
