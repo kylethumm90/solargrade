@@ -129,7 +129,7 @@ FROM vendors WHERE slug = 'energy-bill-cruncher';
 -- Review 8: GoHighLevel - Kyle T.
 INSERT INTO reviews (vendor_id, reviewer_name, company, ratings, review_text, created_at)
 SELECT id, 'Kyle T.', 'RTP Solar',
-  '{"leadQuality":5,"support":3,"integration":4,"roi":5,"transparency":4,"reliability":4}'::jsonb,
+  '{"customization":5,"support":3,"integration":4,"roi":5,"reporting":4,"reliability":4}'::jsonb,
   'GHL is the backbone of our entire operation. Automations, funnels, pipeline management. Support can be slow but the community fills the gaps. For the price point, nothing else comes close.',
   '2026-01-20'::timestamptz
 FROM vendors WHERE slug = 'gohighlevel';
