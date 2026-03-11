@@ -3,7 +3,7 @@ import { CATEGORIES, getAverageRating } from '@/lib/constants'
 import { Company, Review } from '@/lib/types'
 import { TopRatedSection } from '@/components/TopRatedSection'
 import { RecentReviewsSection } from '@/components/RecentReviewsSection'
-import { Wrench, Megaphone, Users, Phone, DollarSign, Code } from 'lucide-react'
+import { Wrench, Megaphone, Users, Phone, DollarSign, Code, ShieldCheck } from 'lucide-react'
 
 const CATEGORY_ICONS: Record<string, React.ReactNode> = {
   installers: <Wrench size={20} />,
@@ -112,6 +112,10 @@ export default async function HomePage() {
             >
               Write a Review
             </a>
+          </div>
+          <div className="mt-6 flex items-center justify-center gap-1.5 text-xs text-[#94a3b8]">
+            <ShieldCheck size={14} className="text-[#94a3b8]" />
+            <span>Ratings are 100% based on real reviews. They can&apos;t be bought.</span>
           </div>
         </div>
       </section>

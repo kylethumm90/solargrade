@@ -41,6 +41,9 @@ export default function RootLayout({
               <a href="/submit" className="text-[#64748b] hover:text-[#1e293b] transition-colors">
                 Submit Company
               </a>
+              <a href="/about" className="text-[#64748b] hover:text-[#1e293b] transition-colors">
+                About
+              </a>
             </div>
           </div>
         </nav>
