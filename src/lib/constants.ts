@@ -27,8 +27,19 @@ export const VENDOR_RATINGS = [
   { key: 'reliability', label: 'Reliability' },
 ] as const
 
+export const CRM_RATINGS = [
+  { key: 'customization', label: 'Customization' },
+  { key: 'support', label: 'Customer Support' },
+  { key: 'integration', label: 'Integration / Ease of Use' },
+  { key: 'roi', label: 'ROI' },
+  { key: 'reporting', label: 'Reporting / Analytics' },
+  { key: 'reliability', label: 'Reliability' },
+] as const
+
 export function getRatingFields(category: string) {
-  return category === 'installers' ? INSTALLER_RATINGS : VENDOR_RATINGS
+  if (category === 'installers') return INSTALLER_RATINGS
+  if (category === 'crm') return CRM_RATINGS
+  return VENDOR_RATINGS
 }
 
 export function getCategoryLabel(value: string) {
