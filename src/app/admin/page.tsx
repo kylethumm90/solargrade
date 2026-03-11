@@ -83,13 +83,13 @@ export default function AdminPage() {
   async function loadPending() {
     setLoading(true)
     const { data: pCompanies } = await supabase
-      .from('pending_companies')
+      .from('pending_vendors')
       .select('*')
       .order('submitted_at', { ascending: false })
 
     const { data: pReviews } = await supabase
       .from('pending_reviews')
-      .select('*, vendors(name, category)')
+      .select('*, vendors!company_id(name, category)')
       .order('submitted_at', { ascending: false })
 
     setPendingCompanies(pCompanies || [])
@@ -108,7 +108,7 @@ export default function AdminPage() {
   async function loadReviews() {
     const { data } = await supabase
       .from('reviews')
-      .select('*, vendors(name, category)')
+      .select('*, vendors!company_id(name, category)')
       .order('created_at', { ascending: false })
     setReviews((data as ReviewWithCompany[]) || [])
   }
@@ -132,14 +132,14 @@ export default function AdminPage() {
     })
 
     if (!error) {
-      await supabase.from('pending_companies').delete().eq('id', pc.id)
+      await supabase.from('pending_vendors').delete().eq('id', pc.id)
       loadPending()
       loadCompanies()
     }
   }
 
   async function rejectCompany(id: string) {
-    await supabase.from('pending_companies').delete().eq('id', id)
+    await supabase.from('pending_vendors').delete().eq('id', id)
     loadPending()
   }
 
