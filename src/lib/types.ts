@@ -35,6 +35,10 @@ export interface PendingVendor {
   submitted_at: string
 }
 
+export interface ReviewWithVendor extends Review {
+  vendors?: { name: string; category: string }
+}
+
 export interface PendingReview {
   id: string
   vendor_id: string
