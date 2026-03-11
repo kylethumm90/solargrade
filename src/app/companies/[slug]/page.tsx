@@ -46,9 +46,24 @@ export default async function CompanyDetailPage({ params }: { params: { slug: st
     <div className="max-w-4xl mx-auto px-4 py-12">
       {/* Header */}
       <div className="mb-8">
-        <div className="flex items-center gap-3 mb-2">
-          <h1 className="text-3xl font-bold text-[#1e293b]">{typedCompany.name}</h1>
-          <CategoryBadge category={typedCompany.category} />
+        <div className="flex items-center gap-4 mb-2">
+          {typedCompany.logo_url ? (
+            <img
+              src={typedCompany.logo_url}
+              alt={`${typedCompany.name} logo`}
+              className="w-16 h-16 rounded-xl object-contain bg-white border border-[#e2e8f0] shrink-0"
+            />
+          ) : (
+            <div className="w-16 h-16 rounded-xl bg-amber-500/10 flex items-center justify-center shrink-0">
+              <span className="text-amber-600 font-bold text-2xl">{typedCompany.name.charAt(0)}</span>
+            </div>
+          )}
+          <div>
+            <div className="flex items-center gap-3">
+              <h1 className="text-3xl font-bold text-[#1e293b]">{typedCompany.name}</h1>
+              <CategoryBadge category={typedCompany.category} />
+            </div>
+          </div>
         </div>
         {typedCompany.description && (
           <p className="text-[#64748b] mb-3">{typedCompany.description}</p>

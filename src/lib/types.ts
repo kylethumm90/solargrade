@@ -12,6 +12,7 @@ export interface Company {
   tiktok_url: string | null
   twitter_url: string | null
   website_url: string | null
+  logo_url: string | null
   approved: boolean
   created_at: string
 }
