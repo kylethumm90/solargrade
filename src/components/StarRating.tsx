@@ -14,7 +14,7 @@ export function StarRating({ rating, size = 'md' }: StarRatingProps) {
         const filled = rating >= star
         const half = !filled && rating >= star - 0.5
         return (
-          <span key={star} className={filled || half ? 'text-amber-500' : 'text-gray-600'}>
+          <span key={star} className={filled || half ? 'text-amber-500' : 'text-gray-300'}>
             {filled ? '\u2605' : half ? '\u2605' : '\u2606'}
           </span>
         )
@@ -32,7 +32,7 @@ interface StarInputProps {
 export function StarInput({ value, onChange, label }: StarInputProps) {
   return (
     <div className="flex items-center justify-between gap-4">
-      <span className="text-sm text-[#e2e8f0] min-w-[160px]">{label}</span>
+      <span className="text-sm text-[#1e293b] min-w-[160px]">{label}</span>
       <div className="flex gap-1">
         {[1, 2, 3, 4, 5].map((star) => (
           <button
@@ -40,7 +40,7 @@ export function StarInput({ value, onChange, label }: StarInputProps) {
             type="button"
             onClick={() => onChange(star)}
             className={`text-2xl transition-colors hover:text-amber-400 ${
-              star <= value ? 'text-amber-500' : 'text-gray-600'
+              star <= value ? 'text-amber-500' : 'text-gray-300'
             }`}
           >
             {star <= value ? '\u2605' : '\u2606'}

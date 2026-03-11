@@ -94,19 +94,19 @@ export default function AdminPage() {
   if (!authenticated) {
     return (
       <div className="max-w-md mx-auto px-4 py-20">
-        <div className="bg-[#141820] border border-[#1e2738] rounded-xl p-8">
-          <h1 className="text-2xl font-bold text-[#e2e8f0] mb-6 text-center">Admin Access</h1>
+        <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-8">
+          <h1 className="text-2xl font-bold text-[#1e293b] mb-6 text-center">Admin Access</h1>
           <form onSubmit={handleLogin} className="space-y-4">
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-[#0c0f14] border border-[#1e2738] text-[#e2e8f0] rounded-lg px-4 py-3"
+              className="w-full bg-white border border-[#e2e8f0] text-[#1e293b] rounded-lg px-4 py-3"
               placeholder="Enter password"
             />
             <button
               type="submit"
-              className="w-full px-6 py-3 bg-amber-500 text-black font-semibold rounded-lg hover:bg-amber-400 transition-colors"
+              className="w-full px-6 py-3 bg-amber-500 text-white font-semibold rounded-lg hover:bg-amber-400 transition-colors"
             >
               Login
             </button>
@@ -118,40 +118,40 @@ export default function AdminPage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
-      <h1 className="text-3xl font-bold text-[#e2e8f0] mb-8">Admin Panel</h1>
+      <h1 className="text-3xl font-bold text-[#1e293b] mb-8">Admin Panel</h1>
 
       {loading ? (
-        <p className="text-[#7a8ba8]">Loading...</p>
+        <p className="text-[#64748b]">Loading...</p>
       ) : (
         <>
           {/* Pending Vendors */}
           <section className="mb-12">
-            <h2 className="text-xl font-bold text-[#e2e8f0] mb-4">
+            <h2 className="text-xl font-bold text-[#1e293b] mb-4">
               Pending Vendors ({pendingVendors.length})
             </h2>
             {pendingVendors.length === 0 ? (
-              <p className="text-[#7a8ba8]">No pending vendors.</p>
+              <p className="text-[#64748b]">No pending vendors.</p>
             ) : (
               <div className="space-y-4">
                 {pendingVendors.map((pv) => (
                   <div
                     key={pv.id}
-                    className="bg-[#141820] border border-[#1e2738] rounded-xl p-6"
+                    className="bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-6"
                   >
                     <div className="flex items-start justify-between mb-2">
                       <div>
-                        <h3 className="font-semibold text-[#e2e8f0] text-lg">{pv.name}</h3>
-                        <p className="text-[#7a8ba8] text-sm">{getCategoryLabel(pv.category)}</p>
+                        <h3 className="font-semibold text-[#1e293b] text-lg">{pv.name}</h3>
+                        <p className="text-[#64748b] text-sm">{getCategoryLabel(pv.category)}</p>
                       </div>
-                      <span className="text-xs text-[#7a8ba8]">
+                      <span className="text-xs text-[#64748b]">
                         {new Date(pv.submitted_at).toLocaleDateString()}
                       </span>
                     </div>
                     {pv.website && (
-                      <p className="text-amber-500 text-sm mb-2">{pv.website}</p>
+                      <p className="text-amber-600 text-sm mb-2">{pv.website}</p>
                     )}
                     {pv.description && (
-                      <p className="text-[#7a8ba8] text-sm mb-4">{pv.description}</p>
+                      <p className="text-[#64748b] text-sm mb-4">{pv.description}</p>
                     )}
                     <div className="flex gap-3">
                       <button
@@ -175,11 +175,11 @@ export default function AdminPage() {
 
           {/* Pending Reviews */}
           <section>
-            <h2 className="text-xl font-bold text-[#e2e8f0] mb-4">
+            <h2 className="text-xl font-bold text-[#1e293b] mb-4">
               Pending Reviews ({pendingReviews.length})
             </h2>
             {pendingReviews.length === 0 ? (
-              <p className="text-[#7a8ba8]">No pending reviews.</p>
+              <p className="text-[#64748b]">No pending reviews.</p>
             ) : (
               <div className="space-y-4">
                 {pendingReviews.map((pr) => {
@@ -188,19 +188,19 @@ export default function AdminPage() {
                   return (
                     <div
                       key={pr.id}
-                      className="bg-[#141820] border border-[#1e2738] rounded-xl p-6"
+                      className="bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-6"
                     >
                       <div className="flex items-start justify-between mb-2">
                         <div>
-                          <h3 className="font-semibold text-[#e2e8f0]">
+                          <h3 className="font-semibold text-[#1e293b]">
                             {pr.vendors?.name || 'Unknown Vendor'}
                           </h3>
-                          <p className="text-[#7a8ba8] text-sm">
+                          <p className="text-[#64748b] text-sm">
                             by {pr.reviewer_name}
                             {pr.company && ` at ${pr.company}`}
                           </p>
                         </div>
-                        <span className="text-xs text-[#7a8ba8]">
+                        <span className="text-xs text-[#64748b]">
                           {new Date(pr.submitted_at).toLocaleDateString()}
                         </span>
                       </div>
@@ -211,14 +211,14 @@ export default function AdminPage() {
                           if (val === undefined) return null
                           return (
                             <div key={field.key} className="flex items-center gap-2 text-sm">
-                              <span className="text-[#7a8ba8]">{field.label}:</span>
+                              <span className="text-[#64748b]">{field.label}:</span>
                               <StarRating rating={val} size="sm" />
                             </div>
                           )
                         })}
                       </div>
 
-                      <p className="text-[#e2e8f0] text-sm mb-4">{pr.review_text}</p>
+                      <p className="text-[#1e293b] text-sm mb-4">{pr.review_text}</p>
 
                       <div className="flex gap-3">
                         <button
