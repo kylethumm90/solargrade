@@ -78,7 +78,8 @@ export default function ReviewPage() {
     })
 
     if (submitError) {
-      setError('Failed to submit review. Please try again.')
+      console.error('Review submission error:', submitError)
+      setError(`Failed to submit review: ${submitError.message}`)
       setSubmitting(false)
       return
     }
