@@ -1,0 +1,65 @@
+-- SolarGrade Database Schema
+-- Run this in the Supabase SQL Editor
+
+-- Vendors/companies listed on the platform
+create table vendors (
+  id uuid primary key default gen_random_uuid(),
+  slug text unique not null,
+  name text not null,
+  category text not null check (category in ('installers', 'leads', 'crm', 'callcenter', 'financing', 'software')),
+  website text,
+  description text,
+  approved boolean default true,
+  created_at timestamptz default now()
+);
+
+-- Approved reviews
+create table reviews (
+  id uuid primary key default gen_random_uuid(),
+  vendor_id uuid references vendors(id) on delete cascade,
+  reviewer_name text not null,
+  company text,
+  ratings jsonb not null,
+  review_text text not null,
+  created_at timestamptz default now()
+);
+
+-- Pending vendor submissions (awaiting admin approval)
+create table pending_vendors (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  category text not null,
+  website text,
+  description text,
+  submitted_at timestamptz default now()
+);
+
+-- Pending review submissions (awaiting admin approval)
+create table pending_reviews (
+  id uuid primary key default gen_random_uuid(),
+  vendor_id uuid references vendors(id) on delete cascade,
+  reviewer_name text not null,
+  company text,
+  ratings jsonb not null,
+  review_text text not null,
+  submitted_at timestamptz default now()
+);
+
+-- Enable RLS
+alter table vendors enable row level security;
+alter table reviews enable row level security;
+alter table pending_vendors enable row level security;
+alter table pending_reviews enable row level security;
+
+-- Public read for approved vendors and reviews
+create policy "Public can read vendors" on vendors for select using (approved = true);
+create policy "Public can read reviews" on reviews for select using (true);
+
+-- Anyone can submit to pending tables
+create policy "Anyone can submit vendors" on pending_vendors for insert with check (true);
+create policy "Anyone can submit reviews" on pending_reviews for insert with check (true);
+
+-- Create indexes
+create index idx_vendors_category on vendors(category);
+create index idx_vendors_slug on vendors(slug);
+create index idx_reviews_vendor_id on reviews(vendor_id);

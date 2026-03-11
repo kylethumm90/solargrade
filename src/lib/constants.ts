@@ -1,0 +1,46 @@
+export const CATEGORIES = [
+  { value: 'installers', label: 'Installers / EPCs', color: '#f59e0b' },
+  { value: 'leads', label: 'Lead Vendors', color: '#3b82f6' },
+  { value: 'crm', label: 'CRM Systems', color: '#8b5cf6' },
+  { value: 'callcenter', label: 'Call Centers', color: '#10b981' },
+  { value: 'financing', label: 'Financing', color: '#ec4899' },
+  { value: 'software', label: 'Software Tools', color: '#6366f1' },
+] as const
+
+export type Category = (typeof CATEGORIES)[number]['value']
+
+export const INSTALLER_RATINGS = [
+  { key: 'payReliability', label: 'Payment Reliability' },
+  { key: 'communication', label: 'Communication' },
+  { key: 'installQuality', label: 'Install Quality' },
+  { key: 'warranty', label: 'Warranty Support' },
+  { key: 'transparency', label: 'Transparency' },
+  { key: 'wouldRecommend', label: 'Would Recommend' },
+] as const
+
+export const VENDOR_RATINGS = [
+  { key: 'leadQuality', label: 'Lead Quality' },
+  { key: 'support', label: 'Customer Support' },
+  { key: 'integration', label: 'Integration / Ease of Use' },
+  { key: 'roi', label: 'ROI' },
+  { key: 'transparency', label: 'Transparency' },
+  { key: 'reliability', label: 'Reliability' },
+] as const
+
+export function getRatingFields(category: string) {
+  return category === 'installers' ? INSTALLER_RATINGS : VENDOR_RATINGS
+}
+
+export function getCategoryLabel(value: string) {
+  return CATEGORIES.find((c) => c.value === value)?.label ?? value
+}
+
+export function getCategoryColor(value: string) {
+  return CATEGORIES.find((c) => c.value === value)?.color ?? '#94a3b8'
+}
+
+export function getAverageRating(ratings: Record<string, number>): number {
+  const values = Object.values(ratings)
+  if (values.length === 0) return 0
+  return values.reduce((a, b) => a + b, 0) / values.length
+}
