@@ -27,7 +27,7 @@ async function getTopCompanies() {
   if (!companies || !reviews) return []
 
   const companyMap = companies.map((company: Company) => {
-    const companyReviews = reviews.filter((r: Review) => r.company_id === company.id)
+    const companyReviews = reviews.filter((r: Review) => r.vendor_id === company.id)
     const avgRatings = companyReviews.map((r: Review) => getAverageRating(r.ratings))
     const avgRating =
       avgRatings.length > 0
@@ -50,7 +50,7 @@ async function getRecentReviews() {
 
   if (!reviews || reviews.length < 5) return []
 
-  const companyIds = Array.from(new Set(reviews.map((r: Review) => r.company_id)))
+  const companyIds = Array.from(new Set(reviews.map((r: Review) => r.vendor_id)))
   const { data: companies } = await supabase
     .from('vendors')
     .select('id, name, slug, logo_url, category')
@@ -62,9 +62,9 @@ async function getRecentReviews() {
   const companyMap = new Map(companies.map((c: { id: string; name: string; slug: string; logo_url: string | null; category: string }) => [c.id, c]))
 
   return reviews
-    .filter((r: Review) => companyMap.has(r.company_id))
+    .filter((r: Review) => companyMap.has(r.vendor_id))
     .map((r: Review) => {
-      const company = companyMap.get(r.company_id)!
+      const company = companyMap.get(r.vendor_id)!
       return {
         id: r.id,
         reviewer_name: r.reviewer_name,

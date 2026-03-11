@@ -89,7 +89,7 @@ export default function AdminPage() {
 
     const { data: pReviews } = await supabase
       .from('pending_reviews')
-      .select('*, vendors!company_id(name, category)')
+      .select('*')
       .order('submitted_at', { ascending: false })
 
     setPendingCompanies(pCompanies || [])
@@ -108,7 +108,7 @@ export default function AdminPage() {
   async function loadReviews() {
     const { data } = await supabase
       .from('reviews')
-      .select('*, vendors!company_id(name, category)')
+      .select('*, vendors!vendor_id(name, category)')
       .order('created_at', { ascending: false })
     setReviews((data as ReviewWithCompany[]) || [])
   }
@@ -145,7 +145,7 @@ export default function AdminPage() {
 
   async function approveReview(pr: PendingReview) {
     const { error } = await supabase.from('reviews').insert({
-      company_id: pr.company_id,
+      vendor_id: pr.vendor_id,
       reviewer_name: pr.reviewer_name,
       company: pr.company,
       relationship: pr.relationship,

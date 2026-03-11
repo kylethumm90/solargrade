@@ -69,7 +69,7 @@ export default function ReviewPage() {
 
     setSubmitting(true)
     const { error: submitError } = await supabase.from('reviews').insert({
-      company_id: selectedCompany,
+      vendor_id: selectedCompany,
       reviewer_name: reviewerName,
       company: company || null,
       relationship: isInstaller ? relationship : null,

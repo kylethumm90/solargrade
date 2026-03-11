@@ -24,7 +24,7 @@ create table vendors (
 -- Approved reviews
 create table reviews (
   id uuid primary key default gen_random_uuid(),
-  company_id uuid references vendors(id) on delete cascade,
+  vendor_id uuid references vendors(id) on delete cascade,
   reviewer_name text not null,
   company text,
   relationship text,
@@ -46,7 +46,7 @@ create table pending_vendors (
 -- Pending review submissions (awaiting admin approval)
 create table pending_reviews (
   id uuid primary key default gen_random_uuid(),
-  company_id uuid references vendors(id) on delete cascade,
+  vendor_id uuid references vendors(id) on delete cascade,
   reviewer_name text not null,
   company text,
   relationship text,
@@ -88,4 +88,4 @@ create policy "Anyone can delete pending reviews" on pending_reviews for delete 
 -- Create indexes
 create index idx_vendors_category on vendors(category);
 create index idx_vendors_slug on vendors(slug);
-create index idx_reviews_company_id on reviews(company_id);
+create index idx_reviews_vendor_id on reviews(vendor_id);
