@@ -28,7 +28,7 @@ export default function CompaniesPage() {
   useEffect(() => {
     async function load() {
       setLoading(true)
-      let query = supabase.from('companies').select('*').eq('approved', true)
+      let query = supabase.from('vendors').select('*').eq('approved', true)
       if (category) query = query.eq('category', category)
       const { data: companyData } = await query
       const { data: reviewData } = await supabase.from('reviews').select('*')
