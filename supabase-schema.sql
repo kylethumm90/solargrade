@@ -6,7 +6,7 @@ create table vendors (
   id uuid primary key default gen_random_uuid(),
   slug text unique not null,
   name text not null,
-  category text not null check (category in ('installers', 'leads', 'crm', 'callcenter', 'financing', 'software')),
+  category text not null check (category in ('installers', 'leads', 'crm', 'callcenter', 'financing', 'software', 'salesorg')),
   website text,
   description text,
   facebook_url text,
