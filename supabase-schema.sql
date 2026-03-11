@@ -89,3 +89,19 @@ create policy "Anyone can delete pending reviews" on pending_reviews for delete 
 create index idx_vendors_category on vendors(category);
 create index idx_vendors_slug on vendors(slug);
 create index idx_reviews_company_id on reviews(company_id);
+
+-- Storage: Create logos bucket
+insert into storage.buckets (id, name, public) values ('logos', 'logos', true)
+on conflict (id) do nothing;
+
+-- Storage: Allow public read access to logos
+create policy "Public can read logos" on storage.objects for select using (bucket_id = 'logos');
+
+-- Storage: Allow anyone to upload logos
+create policy "Anyone can upload logos" on storage.objects for insert with check (bucket_id = 'logos');
+
+-- Storage: Allow anyone to update/overwrite logos (for upsert)
+create policy "Anyone can update logos" on storage.objects for update using (bucket_id = 'logos') with check (bucket_id = 'logos');
+
+-- Storage: Allow anyone to delete logos
+create policy "Anyone can delete logos" on storage.objects for delete using (bucket_id = 'logos');
