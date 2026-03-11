@@ -2,6 +2,7 @@ import { supabase } from '@/lib/supabase'
 import { CATEGORIES, getAverageRating } from '@/lib/constants'
 import { Company, Review } from '@/lib/types'
 import { TopRatedSection } from '@/components/TopRatedSection'
+import { RecentReviewsSection } from '@/components/RecentReviewsSection'
 import { Wrench, Megaphone, Users, Phone, DollarSign, Code } from 'lucide-react'
 
 const CATEGORY_ICONS: Record<string, React.ReactNode> = {
@@ -40,8 +41,48 @@ async function getTopCompanies() {
     .sort((a, b) => b.avg_rating - a.avg_rating)
 }
 
+async function getRecentReviews() {
+  const { data: reviews } = await supabase
+    .from('reviews')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(10)
+
+  if (!reviews || reviews.length < 5) return []
+
+  const companyIds = Array.from(new Set(reviews.map((r: Review) => r.company_id)))
+  const { data: companies } = await supabase
+    .from('companies')
+    .select('id, name, slug')
+    .in('id', companyIds)
+    .eq('approved', true)
+
+  if (!companies) return []
+
+  const companyMap = new Map(companies.map((c: { id: string; name: string; slug: string }) => [c.id, c]))
+
+  return reviews
+    .filter((r: Review) => companyMap.has(r.company_id))
+    .map((r: Review) => {
+      const company = companyMap.get(r.company_id)!
+      return {
+        id: r.id,
+        reviewer_name: r.reviewer_name,
+        review_text: r.review_text,
+        ratings: r.ratings,
+        created_at: r.created_at,
+        company_name: company.name,
+        company_slug: company.slug,
+        avg_rating: getAverageRating(r.ratings),
+      }
+    })
+}
+
 export default async function HomePage() {
-  const topCompanies = await getTopCompanies()
+  const [topCompanies, recentReviews] = await Promise.all([
+    getTopCompanies(),
+    getRecentReviews(),
+  ])
 
   return (
     <div>
@@ -101,6 +142,10 @@ export default async function HomePage() {
 
       {/* Top Rated */}
       {topCompanies.length > 0 && <TopRatedSection companies={topCompanies} />}
+
+      {/* Recent Reviews */}
+      {recentReviews.length >= 5 && <RecentReviewsSection reviews={recentReviews} />}
+
       {/* CTA */}
       <section className="max-w-6xl mx-auto px-4 py-16">
         <div className="border-t border-amber-500/30 pt-16">
