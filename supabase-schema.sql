@@ -65,6 +65,18 @@ create policy "Anyone can insert reviews" on reviews for insert with check (true
 create policy "Anyone can submit vendors" on pending_vendors for insert with check (true);
 create policy "Anyone can submit reviews" on pending_reviews for insert with check (true);
 
+-- Admin operations: update and delete vendors and reviews
+create policy "Anyone can update vendors" on vendors for update using (true) with check (true);
+create policy "Anyone can delete vendors" on vendors for delete using (true);
+create policy "Anyone can update reviews" on reviews for update using (true) with check (true);
+create policy "Anyone can delete reviews" on reviews for delete using (true);
+
+-- Admin operations: read and delete pending submissions
+create policy "Anyone can read pending vendors" on pending_vendors for select using (true);
+create policy "Anyone can delete pending vendors" on pending_vendors for delete using (true);
+create policy "Anyone can read pending reviews" on pending_reviews for select using (true);
+create policy "Anyone can delete pending reviews" on pending_reviews for delete using (true);
+
 -- Create indexes
 create index idx_vendors_category on vendors(category);
 create index idx_vendors_slug on vendors(slug);
