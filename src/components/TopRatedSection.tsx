@@ -10,6 +10,7 @@ type RatedCompany = {
   slug: string
   name: string
   category: string
+  logo_url: string | null
   avg_rating: number
   review_count: number
 }
@@ -62,9 +63,20 @@ export function TopRatedSection({ companies }: { companies: RatedCompany[] }) {
               className="flex items-center gap-4 p-4 rounded-xl bg-[#f8fafc] border border-[#e2e8f0] hover:border-amber-500/30 transition-all duration-200 animate-fade-in"
               style={{ animationDelay: `${i * 50}ms` }}
             >
-              <span className="text-2xl font-bold text-[#64748b] w-8 text-center">
+              <span className="text-2xl font-bold text-[#64748b] w-8 text-center shrink-0">
                 {i + 1}
               </span>
+              {company.logo_url ? (
+                <img
+                  src={company.logo_url}
+                  alt=""
+                  className="w-10 h-10 rounded-lg object-contain border border-[#e2e8f0] bg-white p-0.5 shrink-0"
+                />
+              ) : (
+                <div className="w-10 h-10 rounded-lg bg-[#f1f5f9] flex items-center justify-center text-sm font-semibold text-[#94a3b8] shrink-0">
+                  {company.name.charAt(0)}
+                </div>
+              )}
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="font-semibold text-[#1e293b]">{company.name}</span>

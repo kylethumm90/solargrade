@@ -16,6 +16,7 @@ create table companies (
   tiktok_url text,
   twitter_url text,
   website_url text,
+  logo_url text,
   approved boolean default true,
   created_at timestamptz default now()
 );

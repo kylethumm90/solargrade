@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase'
 import { getCategoryLabel, getCategoryColor, getRatingFields, CATEGORIES } from '@/lib/constants'
 import { StarRating } from '@/components/StarRating'
 import { PendingCompany, PendingReview, Company, ReviewWithCompany } from '@/lib/types'
+import { Upload, X } from 'lucide-react'
 
 const ADMIN_PASSWORD = 'solargrade2026'
 
@@ -33,6 +34,7 @@ export default function AdminPage() {
   const [editingReview, setEditingReview] = useState<ReviewWithCompany | null>(null)
 
   const [loading, setLoading] = useState(false)
+  const [uploadingLogo, setUploadingLogo] = useState(false)
 
   function handleLogin(e: React.FormEvent) {
     e.preventDefault()
@@ -182,6 +184,7 @@ export default function AdminPage() {
         tiktok_url: editingCompany.tiktok_url,
         twitter_url: editingCompany.twitter_url,
         website_url: editingCompany.website_url,
+        logo_url: editingCompany.logo_url,
       })
       .eq('id', editingCompany.id)
 
@@ -200,6 +203,55 @@ export default function AdminPage() {
     }
     loadCompanies()
     loadReviews()
+  }
+
+  // ---- Logo upload ----
+
+  async function handleLogoUpload(companyId: string, slug: string, file: File) {
+    setUploadingLogo(true)
+    const ext = file.name.split('.').pop()
+    const filePath = `${slug}.${ext}`
+
+    const { error: uploadError } = await supabase.storage
+      .from('logos')
+      .upload(filePath, file, { upsert: true })
+
+    if (uploadError) {
+      alert('Upload failed: ' + uploadError.message)
+      setUploadingLogo(false)
+      return
+    }
+
+    const { data } = supabase.storage.from('logos').getPublicUrl(filePath)
+
+    const { error: updateError } = await supabase
+      .from('companies')
+      .update({ logo_url: data.publicUrl })
+      .eq('id', companyId)
+
+    if (updateError) {
+      alert('Failed to save logo URL: ' + updateError.message)
+    } else {
+      if (editingCompany?.id === companyId) {
+        setEditingCompany({ ...editingCompany, logo_url: data.publicUrl })
+      }
+      loadCompanies()
+    }
+    setUploadingLogo(false)
+  }
+
+  async function removeLogo(companyId: string) {
+    const { error } = await supabase
+      .from('companies')
+      .update({ logo_url: null })
+      .eq('id', companyId)
+
+    if (!error) {
+      if (editingCompany?.id === companyId) {
+        setEditingCompany({ ...editingCompany, logo_url: null })
+      }
+      loadCompanies()
+    }
   }
 
   // ---- Review CRUD ----
@@ -467,6 +519,43 @@ export default function AdminPage() {
                             />
                           </div>
                           <div className="border-t border-[#e2e8f0] pt-4">
+                            <label className="block text-sm font-medium text-[#1e293b] mb-2">Logo</label>
+                            <div className="flex items-center gap-4 mb-4">
+                              {editingCompany.logo_url ? (
+                                <div className="relative">
+                                  <img
+                                    src={editingCompany.logo_url}
+                                    alt="Logo"
+                                    className="w-16 h-16 rounded-lg object-contain border border-[#e2e8f0] bg-white p-1"
+                                  />
+                                  <button
+                                    onClick={() => removeLogo(editingCompany.id)}
+                                    className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-400"
+                                  >
+                                    <X size={12} />
+                                  </button>
+                                </div>
+                              ) : (
+                                <div className="w-16 h-16 rounded-lg border-2 border-dashed border-[#e2e8f0] flex items-center justify-center text-[#94a3b8]">
+                                  <Upload size={20} />
+                                </div>
+                              )}
+                              <label className="cursor-pointer px-4 py-2 bg-[#e2e8f0] text-[#1e293b] text-sm rounded-lg hover:bg-[#cbd5e1] transition-colors">
+                                {uploadingLogo ? 'Uploading...' : 'Upload Logo'}
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  className="hidden"
+                                  disabled={uploadingLogo}
+                                  onChange={(e) => {
+                                    const file = e.target.files?.[0]
+                                    if (file) handleLogoUpload(editingCompany.id, editingCompany.slug, file)
+                                  }}
+                                />
+                              </label>
+                            </div>
+                          </div>
+                          <div className="border-t border-[#e2e8f0] pt-4">
                             <label className="block text-sm font-medium text-[#1e293b] mb-3">Social Links</label>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                               {([
@@ -510,7 +599,14 @@ export default function AdminPage() {
                         /* ---- Display mode ---- */
                         <>
                           <div className="flex items-start justify-between mb-2">
-                            <div>
+                            <div className="flex items-center gap-3">
+                              {v.logo_url ? (
+                                <img src={v.logo_url} alt="" className="w-10 h-10 rounded-lg object-contain border border-[#e2e8f0] bg-white p-0.5" />
+                              ) : (
+                                <div className="w-10 h-10 rounded-lg bg-[#f1f5f9] flex items-center justify-center text-sm font-semibold text-[#94a3b8]">
+                                  {v.name.charAt(0)}
+                                </div>
+                              )}
                               <h3 className="font-semibold text-[#1e293b] text-lg">{v.name}</h3>
                               <span
                                 className="inline-block text-xs font-medium text-white px-2 py-0.5 rounded-full mt-1"
