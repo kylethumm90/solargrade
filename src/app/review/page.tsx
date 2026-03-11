@@ -80,15 +80,15 @@ export default function ReviewPage() {
   if (success) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-20 text-center">
-        <div className="bg-[#141820] border border-[#1e2738] rounded-xl p-8">
+        <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-8">
           <div className="text-4xl mb-4">&#10003;</div>
-          <h2 className="text-2xl font-bold text-[#e2e8f0] mb-2">Review Submitted!</h2>
-          <p className="text-[#7a8ba8] mb-6">
+          <h2 className="text-2xl font-bold text-[#1e293b] mb-2">Review Submitted!</h2>
+          <p className="text-[#64748b] mb-6">
             Your review has been submitted for moderation. It will appear on the site once approved.
           </p>
           <a
             href="/vendors"
-            className="text-amber-500 hover:text-amber-400"
+            className="text-amber-600 hover:text-amber-500"
           >
             Back to Vendors
           </a>
@@ -105,18 +105,18 @@ export default function ReviewPage() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-12">
-      <h1 className="text-3xl font-bold text-[#e2e8f0] mb-8">Write a Review</h1>
+      <h1 className="text-3xl font-bold text-[#1e293b] mb-8">Write a Review</h1>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Vendor selector */}
         <div>
-          <label className="block text-sm font-medium text-[#e2e8f0] mb-2">
+          <label className="block text-sm font-medium text-[#1e293b] mb-2">
             Select Vendor *
           </label>
           <select
             value={selectedVendor}
             onChange={(e) => setSelectedVendor(e.target.value)}
-            className="w-full bg-[#141820] border border-[#1e2738] text-[#e2e8f0] rounded-lg px-4 py-3"
+            className="w-full bg-white border border-[#e2e8f0] text-[#1e293b] rounded-lg px-4 py-3"
             required
           >
             <option value="">Choose a vendor...</option>
@@ -134,8 +134,8 @@ export default function ReviewPage() {
 
         {/* Ratings */}
         {vendor && (
-          <div className="bg-[#141820] border border-[#1e2738] rounded-xl p-6">
-            <h3 className="text-sm font-medium text-[#e2e8f0] mb-4">Ratings *</h3>
+          <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-6">
+            <h3 className="text-sm font-medium text-[#1e293b] mb-4">Ratings *</h3>
             <div className="space-y-4">
               {ratingFields.map((field) => (
                 <StarInput
@@ -151,12 +151,12 @@ export default function ReviewPage() {
 
         {/* Name */}
         <div>
-          <label className="block text-sm font-medium text-[#e2e8f0] mb-2">Your Name *</label>
+          <label className="block text-sm font-medium text-[#1e293b] mb-2">Your Name *</label>
           <input
             type="text"
             value={reviewerName}
             onChange={(e) => setReviewerName(e.target.value)}
-            className="w-full bg-[#141820] border border-[#1e2738] text-[#e2e8f0] rounded-lg px-4 py-3"
+            className="w-full bg-white border border-[#e2e8f0] text-[#1e293b] rounded-lg px-4 py-3"
             placeholder="e.g. Jason M."
             required
           />
@@ -164,36 +164,36 @@ export default function ReviewPage() {
 
         {/* Company */}
         <div>
-          <label className="block text-sm font-medium text-[#e2e8f0] mb-2">
+          <label className="block text-sm font-medium text-[#1e293b] mb-2">
             Company (optional)
           </label>
           <input
             type="text"
             value={company}
             onChange={(e) => setCompany(e.target.value)}
-            className="w-full bg-[#141820] border border-[#1e2738] text-[#e2e8f0] rounded-lg px-4 py-3"
+            className="w-full bg-white border border-[#e2e8f0] text-[#1e293b] rounded-lg px-4 py-3"
             placeholder="e.g. SunWorks Electric"
           />
         </div>
 
         {/* Review Text */}
         <div>
-          <label className="block text-sm font-medium text-[#e2e8f0] mb-2">Your Review *</label>
+          <label className="block text-sm font-medium text-[#1e293b] mb-2">Your Review *</label>
           <textarea
             value={reviewText}
             onChange={(e) => setReviewText(e.target.value)}
-            className="w-full bg-[#141820] border border-[#1e2738] text-[#e2e8f0] rounded-lg px-4 py-3 min-h-[120px]"
+            className="w-full bg-white border border-[#e2e8f0] text-[#1e293b] rounded-lg px-4 py-3 min-h-[120px]"
             placeholder="Share your experience..."
             required
           />
         </div>
 
-        {error && <p className="text-red-400 text-sm">{error}</p>}
+        {error && <p className="text-red-600 text-sm">{error}</p>}
 
         <button
           type="submit"
           disabled={submitting}
-          className="w-full px-6 py-3 bg-amber-500 text-black font-semibold rounded-lg hover:bg-amber-400 transition-colors disabled:opacity-50"
+          className="w-full px-6 py-3 bg-amber-500 text-white font-semibold rounded-lg hover:bg-amber-400 transition-colors disabled:opacity-50"
         >
           {submitting ? 'Submitting...' : 'Submit Review'}
         </button>
