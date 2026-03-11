@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { getCategoryLabel, getCategoryColor, getRatingFields, CATEGORIES } from '@/lib/constants'
 import { StarRating } from '@/components/StarRating'
-import { PendingVendor, PendingReview, Vendor, ReviewWithVendor } from '@/lib/types'
+import { PendingCompany, PendingReview, Company, ReviewWithCompany } from '@/lib/types'
 
 const ADMIN_PASSWORD = 'solargrade2026'
 
@@ -21,16 +21,16 @@ export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<Tab>('pending')
 
   // Pending state
-  const [pendingVendors, setPendingVendors] = useState<PendingVendor[]>([])
+  const [pendingCompanies, setPendingCompanies] = useState<PendingCompany[]>([])
   const [pendingReviews, setPendingReviews] = useState<PendingReview[]>([])
 
   // Listings state
-  const [vendors, setVendors] = useState<Vendor[]>([])
-  const [editingVendor, setEditingVendor] = useState<Vendor | null>(null)
+  const [companies, setCompanies] = useState<Company[]>([])
+  const [editingCompany, setEditingCompany] = useState<Company | null>(null)
 
   // Reviews state
-  const [reviews, setReviews] = useState<ReviewWithVendor[]>([])
-  const [editingReview, setEditingReview] = useState<ReviewWithVendor | null>(null)
+  const [reviews, setReviews] = useState<ReviewWithCompany[]>([])
+  const [editingReview, setEditingReview] = useState<ReviewWithCompany | null>(null)
 
   const [loading, setLoading] = useState(false)
 
@@ -45,7 +45,7 @@ export default function AdminPage() {
   useEffect(() => {
     if (!authenticated) return
     loadPending()
-    loadVendors()
+    loadCompanies()
     loadReviews()
   }, [authenticated])
 
@@ -53,70 +53,70 @@ export default function AdminPage() {
 
   async function loadPending() {
     setLoading(true)
-    const { data: pVendors } = await supabase
-      .from('pending_vendors')
+    const { data: pCompanies } = await supabase
+      .from('pending_companies')
       .select('*')
       .order('submitted_at', { ascending: false })
 
     const { data: pReviews } = await supabase
       .from('pending_reviews')
-      .select('*, vendors(name, category)')
+      .select('*, companies(name, category)')
       .order('submitted_at', { ascending: false })
 
-    setPendingVendors(pVendors || [])
+    setPendingCompanies(pCompanies || [])
     setPendingReviews(pReviews || [])
     setLoading(false)
   }
 
-  async function loadVendors() {
+  async function loadCompanies() {
     const { data } = await supabase
-      .from('vendors')
+      .from('companies')
       .select('*')
       .order('name', { ascending: true })
-    setVendors(data || [])
+    setCompanies(data || [])
   }
 
   async function loadReviews() {
     const { data } = await supabase
       .from('reviews')
-      .select('*, vendors(name, category)')
+      .select('*, companies(name, category)')
       .order('created_at', { ascending: false })
-    setReviews((data as ReviewWithVendor[]) || [])
+    setReviews((data as ReviewWithCompany[]) || [])
   }
 
   // ---- Pending actions ----
 
-  async function approveVendor(pv: PendingVendor) {
-    const slug = pv.name
+  async function approveCompany(pc: PendingCompany) {
+    const slug = pc.name
       .toLowerCase()
       .replace(/[^a-z0-9\s-]/g, '')
       .replace(/\s+/g, '-')
       .replace(/-+/g, '-')
 
-    const { error } = await supabase.from('vendors').insert({
+    const { error } = await supabase.from('companies').insert({
       slug,
-      name: pv.name,
-      category: pv.category,
-      website: pv.website,
-      description: pv.description,
+      name: pc.name,
+      category: pc.category,
+      website: pc.website,
+      description: pc.description,
       approved: true,
     })
 
     if (!error) {
-      await supabase.from('pending_vendors').delete().eq('id', pv.id)
+      await supabase.from('pending_companies').delete().eq('id', pc.id)
       loadPending()
-      loadVendors()
+      loadCompanies()
     }
   }
 
-  async function rejectVendor(id: string) {
-    await supabase.from('pending_vendors').delete().eq('id', id)
+  async function rejectCompany(id: string) {
+    await supabase.from('pending_companies').delete().eq('id', id)
     loadPending()
   }
 
   async function approveReview(pr: PendingReview) {
     const { error } = await supabase.from('reviews').insert({
-      vendor_id: pr.vendor_id,
+      company_id: pr.company_id,
       reviewer_name: pr.reviewer_name,
       company: pr.company,
       relationship: pr.relationship,
@@ -136,34 +136,34 @@ export default function AdminPage() {
     loadPending()
   }
 
-  // ---- Vendor CRUD ----
+  // ---- Company CRUD ----
 
-  async function saveVendor() {
-    if (!editingVendor) return
+  async function saveCompany() {
+    if (!editingCompany) return
     const { error } = await supabase
-      .from('vendors')
+      .from('companies')
       .update({
-        name: editingVendor.name,
-        category: editingVendor.category,
-        website: editingVendor.website,
-        description: editingVendor.description,
+        name: editingCompany.name,
+        category: editingCompany.category,
+        website: editingCompany.website,
+        description: editingCompany.description,
       })
-      .eq('id', editingVendor.id)
+      .eq('id', editingCompany.id)
 
     if (!error) {
-      setEditingVendor(null)
-      loadVendors()
+      setEditingCompany(null)
+      loadCompanies()
     }
   }
 
-  async function deleteVendor(id: string) {
+  async function deleteCompany(id: string) {
     if (!confirm('Delete this listing and all its reviews? This cannot be undone.')) return
-    const { error } = await supabase.from('vendors').delete().eq('id', id)
+    const { error } = await supabase.from('companies').delete().eq('id', id)
     if (error) {
-      alert('Failed to delete vendor: ' + error.message)
+      alert('Failed to delete company: ' + error.message)
       return
     }
-    loadVendors()
+    loadCompanies()
     loadReviews()
   }
 
@@ -228,8 +228,8 @@ export default function AdminPage() {
   // ---- Tab navigation ----
 
   const tabs: { key: Tab; label: string; count?: number }[] = [
-    { key: 'pending', label: 'Pending Approvals', count: pendingVendors.length + pendingReviews.length },
-    { key: 'listings', label: 'Manage Listings', count: vendors.length },
+    { key: 'pending', label: 'Pending Approvals', count: pendingCompanies.length + pendingReviews.length },
+    { key: 'listings', label: 'Manage Listings', count: companies.length },
     { key: 'reviews', label: 'Manage Reviews', count: reviews.length },
   ]
 
@@ -270,34 +270,34 @@ export default function AdminPage() {
             <>
               <section className="mb-12">
                 <h2 className="text-xl font-bold text-[#1e293b] mb-4">
-                  Pending Vendors ({pendingVendors.length})
+                  Pending Companies ({pendingCompanies.length})
                 </h2>
-                {pendingVendors.length === 0 ? (
-                  <p className="text-[#64748b]">No pending vendors.</p>
+                {pendingCompanies.length === 0 ? (
+                  <p className="text-[#64748b]">No pending companies.</p>
                 ) : (
                   <div className="space-y-4">
-                    {pendingVendors.map((pv) => (
-                      <div key={pv.id} className="bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-6">
+                    {pendingCompanies.map((pc) => (
+                      <div key={pc.id} className="bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-6">
                         <div className="flex items-start justify-between mb-2">
                           <div>
-                            <h3 className="font-semibold text-[#1e293b] text-lg">{pv.name}</h3>
-                            <p className="text-[#64748b] text-sm">{getCategoryLabel(pv.category)}</p>
+                            <h3 className="font-semibold text-[#1e293b] text-lg">{pc.name}</h3>
+                            <p className="text-[#64748b] text-sm">{getCategoryLabel(pc.category)}</p>
                           </div>
                           <span className="text-xs text-[#64748b]">
-                            {new Date(pv.submitted_at).toLocaleDateString()}
+                            {new Date(pc.submitted_at).toLocaleDateString()}
                           </span>
                         </div>
-                        {pv.website && <p className="text-amber-600 text-sm mb-2">{pv.website}</p>}
-                        {pv.description && <p className="text-[#64748b] text-sm mb-4">{pv.description}</p>}
+                        {pc.website && <p className="text-amber-600 text-sm mb-2">{pc.website}</p>}
+                        {pc.description && <p className="text-[#64748b] text-sm mb-4">{pc.description}</p>}
                         <div className="flex gap-3">
                           <button
-                            onClick={() => approveVendor(pv)}
+                            onClick={() => approveCompany(pc)}
                             className="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-500 transition-colors"
                           >
                             Approve
                           </button>
                           <button
-                            onClick={() => rejectVendor(pv.id)}
+                            onClick={() => rejectCompany(pc.id)}
                             className="px-4 py-2 bg-red-600 text-white text-sm rounded-lg hover:bg-red-500 transition-colors"
                           >
                             Reject
@@ -318,14 +318,14 @@ export default function AdminPage() {
                 ) : (
                   <div className="space-y-4">
                     {pendingReviews.map((pr) => {
-                      const vendorCategory = pr.vendors?.category || 'installers'
-                      const ratingFields = getRatingFields(vendorCategory)
+                      const companyCategory = pr.companies?.category || 'installers'
+                      const ratingFields = getRatingFields(companyCategory)
                       return (
                         <div key={pr.id} className="bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-6">
                           <div className="flex items-start justify-between mb-2">
                             <div>
                               <h3 className="font-semibold text-[#1e293b]">
-                                {pr.vendors?.name || 'Unknown Vendor'}
+                                {pr.companies?.name || 'Unknown Company'}
                               </h3>
                               <p className="text-[#64748b] text-sm">
                                 by {pr.reviewer_name}
@@ -381,31 +381,31 @@ export default function AdminPage() {
           {activeTab === 'listings' && (
             <section>
               <h2 className="text-xl font-bold text-[#1e293b] mb-4">
-                All Listings ({vendors.length})
+                All Listings ({companies.length})
               </h2>
-              {vendors.length === 0 ? (
+              {companies.length === 0 ? (
                 <p className="text-[#64748b]">No listings yet.</p>
               ) : (
                 <div className="space-y-4">
-                  {vendors.map((v) => (
+                  {companies.map((v) => (
                     <div key={v.id} className="bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-6">
-                      {editingVendor?.id === v.id ? (
+                      {editingCompany?.id === v.id ? (
                         /* ---- Editing mode ---- */
                         <div className="space-y-4">
                           <div>
                             <label className="block text-sm font-medium text-[#1e293b] mb-1">Name</label>
                             <input
                               type="text"
-                              value={editingVendor.name}
-                              onChange={(e) => setEditingVendor({ ...editingVendor, name: e.target.value })}
+                              value={editingCompany.name}
+                              onChange={(e) => setEditingCompany({ ...editingCompany, name: e.target.value })}
                               className="w-full bg-white border border-[#e2e8f0] text-[#1e293b] rounded-lg px-3 py-2 text-sm"
                             />
                           </div>
                           <div>
                             <label className="block text-sm font-medium text-[#1e293b] mb-1">Category</label>
                             <select
-                              value={editingVendor.category}
-                              onChange={(e) => setEditingVendor({ ...editingVendor, category: e.target.value })}
+                              value={editingCompany.category}
+                              onChange={(e) => setEditingCompany({ ...editingCompany, category: e.target.value })}
                               className="w-full bg-white border border-[#e2e8f0] text-[#1e293b] rounded-lg px-3 py-2 text-sm"
                             >
                               {CATEGORIES.map((c) => (
@@ -417,29 +417,29 @@ export default function AdminPage() {
                             <label className="block text-sm font-medium text-[#1e293b] mb-1">Website</label>
                             <input
                               type="text"
-                              value={editingVendor.website || ''}
-                              onChange={(e) => setEditingVendor({ ...editingVendor, website: e.target.value || null })}
+                              value={editingCompany.website || ''}
+                              onChange={(e) => setEditingCompany({ ...editingCompany, website: e.target.value || null })}
                               className="w-full bg-white border border-[#e2e8f0] text-[#1e293b] rounded-lg px-3 py-2 text-sm"
                             />
                           </div>
                           <div>
                             <label className="block text-sm font-medium text-[#1e293b] mb-1">Description</label>
                             <textarea
-                              value={editingVendor.description || ''}
-                              onChange={(e) => setEditingVendor({ ...editingVendor, description: e.target.value || null })}
+                              value={editingCompany.description || ''}
+                              onChange={(e) => setEditingCompany({ ...editingCompany, description: e.target.value || null })}
                               rows={3}
                               className="w-full bg-white border border-[#e2e8f0] text-[#1e293b] rounded-lg px-3 py-2 text-sm"
                             />
                           </div>
                           <div className="flex gap-3">
                             <button
-                              onClick={saveVendor}
+                              onClick={saveCompany}
                               className="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-500 transition-colors"
                             >
                               Save
                             </button>
                             <button
-                              onClick={() => setEditingVendor(null)}
+                              onClick={() => setEditingCompany(null)}
                               className="px-4 py-2 bg-[#e2e8f0] text-[#1e293b] text-sm rounded-lg hover:bg-[#cbd5e1] transition-colors"
                             >
                               Cancel
@@ -469,13 +469,13 @@ export default function AdminPage() {
                           )}
                           <div className="flex gap-3">
                             <button
-                              onClick={() => setEditingVendor({ ...v })}
+                              onClick={() => setEditingCompany({ ...v })}
                               className="px-4 py-2 bg-amber-500 text-white text-sm rounded-lg hover:bg-amber-400 transition-colors"
                             >
                               Edit
                             </button>
                             <button
-                              onClick={() => deleteVendor(v.id)}
+                              onClick={() => deleteCompany(v.id)}
                               className="px-4 py-2 bg-red-600 text-white text-sm rounded-lg hover:bg-red-500 transition-colors"
                             >
                               Delete
@@ -501,8 +501,8 @@ export default function AdminPage() {
               ) : (
                 <div className="space-y-4">
                   {reviews.map((r) => {
-                    const vendorCategory = r.vendors?.category || 'installers'
-                    const ratingFields = getRatingFields(vendorCategory)
+                    const companyCategory = r.companies?.category || 'installers'
+                    const ratingFields = getRatingFields(companyCategory)
                     const isEditing = editingReview?.id === r.id
 
                     return (
@@ -511,7 +511,7 @@ export default function AdminPage() {
                           /* ---- Editing mode ---- */
                           <div className="space-y-4">
                             <p className="text-sm font-medium text-[#64748b]">
-                              Review for <span className="text-[#1e293b]">{r.vendors?.name || 'Unknown Vendor'}</span>
+                              Review for <span className="text-[#1e293b]">{r.companies?.name || 'Unknown Company'}</span>
                             </p>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                               <div>
@@ -596,7 +596,7 @@ export default function AdminPage() {
                             <div className="flex items-start justify-between mb-2">
                               <div>
                                 <h3 className="font-semibold text-[#1e293b]">
-                                  {r.vendors?.name || 'Unknown Vendor'}
+                                  {r.companies?.name || 'Unknown Company'}
                                 </h3>
                                 <p className="text-[#64748b] text-sm">
                                   by {r.reviewer_name}

@@ -2,30 +2,30 @@ import { supabase } from '@/lib/supabase'
 import { getRatingFields, getAverageRating } from '@/lib/constants'
 import { CategoryBadge } from '@/components/CategoryBadge'
 import { StarRating } from '@/components/StarRating'
-import { Vendor, Review } from '@/lib/types'
+import { Company, Review } from '@/lib/types'
 import { notFound } from 'next/navigation'
 
 export const revalidate = 60
 
-export default async function VendorDetailPage({ params }: { params: { slug: string } }) {
-  const { data: vendor } = await supabase
-    .from('vendors')
+export default async function CompanyDetailPage({ params }: { params: { slug: string } }) {
+  const { data: companyData } = await supabase
+    .from('companies')
     .select('*')
     .eq('slug', params.slug)
     .eq('approved', true)
     .single()
 
-  if (!vendor) notFound()
+  if (!companyData) notFound()
 
   const { data: reviews } = await supabase
     .from('reviews')
     .select('*')
-    .eq('vendor_id', vendor.id)
+    .eq('company_id', companyData.id)
     .order('created_at', { ascending: false })
 
-  const typedVendor = vendor as Vendor
+  const typedCompany = companyData as Company
   const typedReviews = (reviews || []) as Review[]
-  const ratingFields = getRatingFields(typedVendor.category)
+  const ratingFields = getRatingFields(typedCompany.category)
 
   // Calculate overall average
   const allAvgs = typedReviews.map((r) => getAverageRating(r.ratings))
@@ -46,20 +46,20 @@ export default async function VendorDetailPage({ params }: { params: { slug: str
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
-          <h1 className="text-3xl font-bold text-[#1e293b]">{typedVendor.name}</h1>
-          <CategoryBadge category={typedVendor.category} />
+          <h1 className="text-3xl font-bold text-[#1e293b]">{typedCompany.name}</h1>
+          <CategoryBadge category={typedCompany.category} />
         </div>
-        {typedVendor.description && (
-          <p className="text-[#64748b] mb-3">{typedVendor.description}</p>
+        {typedCompany.description && (
+          <p className="text-[#64748b] mb-3">{typedCompany.description}</p>
         )}
-        {typedVendor.website && (
+        {typedCompany.website && (
           <a
-            href={typedVendor.website}
+            href={typedCompany.website}
             target="_blank"
             rel="noopener noreferrer"
             className="text-amber-600 hover:text-amber-500 text-sm"
           >
-            {typedVendor.website} &#8599;
+            {typedCompany.website} &#8599;
           </a>
         )}
       </div>
@@ -99,7 +99,7 @@ export default async function VendorDetailPage({ params }: { params: { slug: str
       {/* Write Review CTA */}
       <div className="mb-8">
         <a
-          href={`/review?vendor=${typedVendor.slug}`}
+          href={`/review?company=${typedCompany.slug}`}
           className="inline-block px-6 py-3 bg-amber-500 text-white font-semibold rounded-lg hover:bg-amber-400 transition-colors"
         >
           Write a Review

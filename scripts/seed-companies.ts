@@ -1,8 +1,8 @@
 /**
- * Seed script to insert vendors into the Supabase database.
+ * Seed script to insert companies into the Supabase database.
  *
  * Usage:
- *   NEXT_PUBLIC_SUPABASE_URL=<url> NEXT_PUBLIC_SUPABASE_ANON_KEY=<key> npx tsx scripts/seed-vendors.ts
+ *   NEXT_PUBLIC_SUPABASE_URL=<url> NEXT_PUBLIC_SUPABASE_ANON_KEY=<key> npx tsx scripts/seed-companies.ts
  */
 
 import { createClient } from '@supabase/supabase-js'
@@ -25,7 +25,7 @@ function toSlug(name: string): string {
     .replace(/-+/g, '-')
 }
 
-const vendors = [
+const companies = [
   { name: 'Apricot Solar', category: 'installers', website: 'https://apricotsolar.com', description: 'Growing residential installer operating in multiple Western states. Known for transparent pricing and customer-first approach.' },
   { name: 'SunPro Solar (Legacy)', category: 'installers', website: null, description: 'Original brand before ADT acquisition. Some markets still reference the SunPro name. See ADT Solar for current status.' },
   { name: 'Enphase Certified Installer Network', category: 'installers', website: 'https://enphase.com/installers', description: 'Network of Enphase-certified local installers. Quality varies by individual installer but Enphase certification provides a baseline standard.' },
@@ -74,9 +74,9 @@ const vendors = [
 ]
 
 async function seed() {
-  console.log(`Inserting ${vendors.length} vendors...`)
+  console.log(`Inserting ${companies.length} companies...`)
 
-  const rows = vendors.map((v) => ({
+  const rows = companies.map((v) => ({
     slug: toSlug(v.name),
     name: v.name,
     category: v.category,
@@ -85,14 +85,14 @@ async function seed() {
     approved: true,
   }))
 
-  const { data, error } = await supabase.from('vendors').insert(rows).select()
+  const { data, error } = await supabase.from('companies').insert(rows).select()
 
   if (error) {
-    console.error('Error inserting vendors:', error)
+    console.error('Error inserting companies:', error)
     process.exit(1)
   }
 
-  console.log(`Successfully inserted ${data.length} vendors.`)
+  console.log(`Successfully inserted ${data.length} companies.`)
 }
 
 seed()

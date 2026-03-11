@@ -4,11 +4,11 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { CATEGORIES, getRatingFields, INSTALLER_RELATIONSHIPS } from '@/lib/constants'
 import { StarInput } from '@/components/StarRating'
-import { Vendor } from '@/lib/types'
+import { Company } from '@/lib/types'
 
 export default function ReviewPage() {
-  const [vendors, setVendors] = useState<Vendor[]>([])
-  const [selectedVendor, setSelectedVendor] = useState('')
+  const [companies, setCompanies] = useState<Company[]>([])
+  const [selectedCompany, setSelectedCompany] = useState('')
   const [reviewerName, setReviewerName] = useState('')
   const [company, setCompany] = useState('')
   const [reviewText, setReviewText] = useState('')
@@ -21,37 +21,37 @@ export default function ReviewPage() {
   useEffect(() => {
     async function load() {
       const { data } = await supabase
-        .from('vendors')
+        .from('companies')
         .select('*')
         .eq('approved', true)
         .order('name')
-      if (data) setVendors(data)
+      if (data) setCompanies(data)
 
       const params = new URLSearchParams(window.location.search)
-      const vendorSlug = params.get('vendor')
-      if (vendorSlug && data) {
-        const found = data.find((v: Vendor) => v.slug === vendorSlug)
-        if (found) setSelectedVendor(found.id)
+      const companySlug = params.get('company')
+      if (companySlug && data) {
+        const found = data.find((v: Company) => v.slug === companySlug)
+        if (found) setSelectedCompany(found.id)
       }
     }
     load()
   }, [])
 
-  const vendor = vendors.find((v) => v.id === selectedVendor)
-  const ratingFields = vendor ? getRatingFields(vendor.category) : []
+  const selectedCompanyData = companies.find((v) => v.id === selectedCompany)
+  const ratingFields = selectedCompanyData ? getRatingFields(selectedCompanyData.category) : []
 
-  const isInstaller = vendor?.category === 'installers'
+  const isInstaller = selectedCompanyData?.category === 'installers'
 
   useEffect(() => {
     setRatings({})
     setRelationship('')
-  }, [selectedVendor])
+  }, [selectedCompany])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
 
-    if (!selectedVendor || !reviewerName || !reviewText) {
+    if (!selectedCompany || !reviewerName || !reviewText) {
       setError('Please fill in all required fields.')
       return
     }
@@ -69,7 +69,7 @@ export default function ReviewPage() {
 
     setSubmitting(true)
     const { error: submitError } = await supabase.from('reviews').insert({
-      vendor_id: selectedVendor,
+      company_id: selectedCompany,
       reviewer_name: reviewerName,
       company: company || null,
       relationship: isInstaller ? relationship : null,
@@ -98,42 +98,42 @@ export default function ReviewPage() {
             Your review has been published. Thank you for your feedback!
           </p>
           <a
-            href="/vendors"
+            href="/companies"
             className="text-amber-600 hover:text-amber-500"
           >
-            Back to Vendors
+            Back to Companies
           </a>
         </div>
       </div>
     )
   }
 
-  // Group vendors by category for optgroup
+  // Group companies by category for optgroup
   const grouped = CATEGORIES.map((cat) => ({
     ...cat,
-    vendors: vendors.filter((v) => v.category === cat.value),
-  })).filter((g) => g.vendors.length > 0)
+    companies: companies.filter((v) => v.category === cat.value),
+  })).filter((g) => g.companies.length > 0)
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-12">
       <h1 className="text-3xl font-bold text-[#1e293b] mb-8">Write a Review</h1>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Vendor selector */}
+        {/* Company selector */}
         <div>
           <label className="block text-sm font-medium text-[#1e293b] mb-2">
-            Select Vendor *
+            Select Company *
           </label>
           <select
-            value={selectedVendor}
-            onChange={(e) => setSelectedVendor(e.target.value)}
+            value={selectedCompany}
+            onChange={(e) => setSelectedCompany(e.target.value)}
             className="w-full bg-white border border-[#e2e8f0] text-[#1e293b] rounded-lg px-4 py-3"
             required
           >
-            <option value="">Choose a vendor...</option>
+            <option value="">Choose a company...</option>
             {grouped.map((group) => (
               <optgroup key={group.value} label={group.label}>
-                {group.vendors.map((v) => (
+                {group.companies.map((v) => (
                   <option key={v.id} value={v.id}>
                     {v.name}
                   </option>
@@ -144,7 +144,7 @@ export default function ReviewPage() {
         </div>
 
         {/* Ratings */}
-        {vendor && (
+        {selectedCompanyData && (
           <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-6">
             <h3 className="text-sm font-medium text-[#1e293b] mb-4">Ratings *</h3>
             <div className="space-y-4">

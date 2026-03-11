@@ -4,7 +4,7 @@ import './globals.css'
 export const metadata: Metadata = {
   title: 'SolarGrade - Solar Industry Review Platform',
   description:
-    'The solar industry\'s first transparent review platform. Real ratings from real professionals on the installers, lead vendors, and tools that actually deliver.',
+    'The solar industry\'s first transparent review platform. Real ratings from real professionals on the installers, lead companies, and tools that actually deliver.',
 }
 
 export default function RootLayout({
@@ -32,8 +32,8 @@ export default function RootLayout({
               </span>
             </a>
             <div className="flex items-center gap-6 text-sm">
-              <a href="/vendors" className="text-[#64748b] hover:text-[#1e293b] transition-colors">
-                Browse Vendors
+              <a href="/companies" className="text-[#64748b] hover:text-[#1e293b] transition-colors">
+                Browse Companies
               </a>
               <a href="/review" className="text-[#64748b] hover:text-[#1e293b] transition-colors">
                 Write a Review

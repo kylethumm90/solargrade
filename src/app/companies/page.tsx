@@ -5,15 +5,15 @@ import { supabase } from '@/lib/supabase'
 import { CATEGORIES, getAverageRating } from '@/lib/constants'
 import { CategoryBadge } from '@/components/CategoryBadge'
 import { StarRating } from '@/components/StarRating'
-import { Vendor, Review } from '@/lib/types'
+import { Company, Review } from '@/lib/types'
 
-interface VendorWithStats extends Vendor {
+interface CompanyWithStats extends Company {
   avg_rating: number
   review_count: number
 }
 
-export default function VendorsPage() {
-  const [vendors, setVendors] = useState<VendorWithStats[]>([])
+export default function CompaniesPage() {
+  const [companies, setCompanies] = useState<CompanyWithStats[]>([])
   const [category, setCategory] = useState('')
   const [sort, setSort] = useState('rating')
   const [search, setSearch] = useState('')
@@ -28,18 +28,18 @@ export default function VendorsPage() {
   useEffect(() => {
     async function load() {
       setLoading(true)
-      let query = supabase.from('vendors').select('*').eq('approved', true)
+      let query = supabase.from('companies').select('*').eq('approved', true)
       if (category) query = query.eq('category', category)
-      const { data: vendorData } = await query
+      const { data: companyData } = await query
       const { data: reviewData } = await supabase.from('reviews').select('*')
 
-      if (!vendorData) {
+      if (!companyData) {
         setLoading(false)
         return
       }
 
-      const mapped = vendorData.map((v: Vendor) => {
-        const vReviews = (reviewData || []).filter((r: Review) => r.vendor_id === v.id)
+      const mapped = companyData.map((v: Company) => {
+        const vReviews = (reviewData || []).filter((r: Review) => r.company_id === v.id)
         const avgRatings = vReviews.map((r: Review) => getAverageRating(r.ratings))
         const avg = avgRatings.length > 0
           ? avgRatings.reduce((a: number, b: number) => a + b, 0) / avgRatings.length
@@ -53,7 +53,7 @@ export default function VendorsPage() {
         return a.name.localeCompare(b.name)
       })
 
-      setVendors(mapped)
+      setCompanies(mapped)
       setLoading(false)
     }
     load()
@@ -61,14 +61,14 @@ export default function VendorsPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-12">
-      <h1 className="text-3xl font-bold text-[#1e293b] mb-8">Vendor Directory</h1>
+      <h1 className="text-3xl font-bold text-[#1e293b] mb-8">Company Directory</h1>
 
       <div className="flex flex-wrap gap-4 mb-8">
         <input
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search vendors..."
+          placeholder="Search companies..."
           className="bg-white border border-[#e2e8f0] text-[#1e293b] rounded-lg px-4 py-2 text-sm flex-1 min-w-[200px]"
         />
 
@@ -104,31 +104,31 @@ export default function VendorsPage() {
       </p>
 
       {loading ? (
-        <p className="text-[#64748b]">Loading vendors...</p>
-      ) : vendors.length === 0 ? (
-        <p className="text-[#64748b]">No vendors found.</p>
+        <p className="text-[#64748b]">Loading companies...</p>
+      ) : companies.length === 0 ? (
+        <p className="text-[#64748b]">No companies found.</p>
       ) : (
         <div className="grid md:grid-cols-2 gap-4">
-          {vendors.filter((vendor) =>
-            vendor.name.toLowerCase().includes(search.toLowerCase())
-          ).map((vendor) => (
+          {companies.filter((company) =>
+            company.name.toLowerCase().includes(search.toLowerCase())
+          ).map((company) => (
             <a
-              key={vendor.id}
-              href={`/vendors/${vendor.slug}`}
+              key={company.id}
+              href={`/companies/${company.slug}`}
               className="p-6 rounded-xl bg-[#f8fafc] border border-[#e2e8f0] hover:border-amber-500/30 transition-all duration-200"
             >
               <div className="flex items-start justify-between mb-2">
-                <h3 className="font-semibold text-[#1e293b] text-lg">{vendor.name}</h3>
-                <CategoryBadge category={vendor.category} />
+                <h3 className="font-semibold text-[#1e293b] text-lg">{company.name}</h3>
+                <CategoryBadge category={company.category} />
               </div>
-              {vendor.description && (
-                <p className="text-[#64748b] text-sm mb-3 line-clamp-2">{vendor.description}</p>
+              {company.description && (
+                <p className="text-[#64748b] text-sm mb-3 line-clamp-2">{company.description}</p>
               )}
               <div className="flex items-center gap-2">
-                <StarRating rating={vendor.avg_rating} size="sm" />
+                <StarRating rating={company.avg_rating} size="sm" />
                 <span className="text-sm text-[#64748b]">
-                  {vendor.avg_rating > 0 ? vendor.avg_rating.toFixed(1) : 'No ratings'} ({vendor.review_count}{' '}
-                  {vendor.review_count === 1 ? 'review' : 'reviews'})
+                  {company.avg_rating > 0 ? company.avg_rating.toFixed(1) : 'No ratings'} ({company.review_count}{' '}
+                  {company.review_count === 1 ? 'review' : 'reviews'})
                 </span>
               </div>
             </a>
@@ -147,7 +147,7 @@ export default function VendorsPage() {
         >
           <h3 className="text-xl font-bold text-[#1e293b] mb-2">Missing a company?</h3>
           <p className="text-[#64748b] text-sm max-w-md mx-auto mb-5">
-            If you&apos;ve worked with an installer, vendor, or tool that isn&apos;t listed yet, add
+            If you&apos;ve worked with an installer, company, or tool that isn&apos;t listed yet, add
             it. Takes 30 seconds.
           </p>
           <a
