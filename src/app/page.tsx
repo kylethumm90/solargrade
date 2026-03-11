@@ -1,8 +1,7 @@
 import { supabase } from '@/lib/supabase'
 import { CATEGORIES, getAverageRating } from '@/lib/constants'
-import { CategoryBadge } from '@/components/CategoryBadge'
-import { StarRating } from '@/components/StarRating'
 import { Vendor, Review } from '@/lib/types'
+import { TopRatedSection } from '@/components/TopRatedSection'
 import { Wrench, Megaphone, Users, Phone, DollarSign, Code } from 'lucide-react'
 
 const CATEGORY_ICONS: Record<string, React.ReactNode> = {
@@ -39,7 +38,6 @@ async function getTopVendors() {
   return vendorMap
     .filter((v) => v.review_count > 0)
     .sort((a, b) => b.avg_rating - a.avg_rating)
-    .slice(0, 5)
 }
 
 export default async function HomePage() {
@@ -102,37 +100,7 @@ export default async function HomePage() {
       </section>
 
       {/* Top Rated */}
-      {topVendors.length > 0 && (
-        <section className="max-w-6xl mx-auto px-4 py-12">
-          <h2 className="text-2xl font-bold text-[#1e293b] mb-6">Top Rated</h2>
-          <div className="space-y-3">
-            {topVendors.map((vendor, i) => (
-              <a
-                key={vendor.id}
-                href={`/vendors/${vendor.slug}`}
-                className="flex items-center gap-4 p-4 rounded-xl bg-[#f8fafc] border border-[#e2e8f0] hover:border-amber-500/30 transition-all duration-200"
-              >
-                <span className="text-2xl font-bold text-[#64748b] w-8 text-center">
-                  {i + 1}
-                </span>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-semibold text-[#1e293b]">{vendor.name}</span>
-                    <CategoryBadge category={vendor.category} />
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <StarRating rating={vendor.avg_rating} size="sm" />
-                    <span className="text-sm text-[#64748b]">
-                      {vendor.avg_rating.toFixed(1)} ({vendor.review_count}{' '}
-                      {vendor.review_count === 1 ? 'review' : 'reviews'})
-                    </span>
-                  </div>
-                </div>
-              </a>
-            ))}
-          </div>
-        </section>
-      )}
+      {topVendors.length > 0 && <TopRatedSection vendors={topVendors} />}
       {/* CTA */}
       <section className="max-w-6xl mx-auto px-4 py-16">
         <div className="border-t border-amber-500/30 pt-16">
