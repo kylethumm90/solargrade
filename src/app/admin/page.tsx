@@ -35,6 +35,7 @@ export default function AdminPage() {
 
   const [loading, setLoading] = useState(false)
   const [uploadingLogo, setUploadingLogo] = useState(false)
+  const [listingSearch, setListingSearch] = useState('')
 
   function handleLogin(e: React.FormEvent) {
     e.preventDefault()
@@ -472,11 +473,20 @@ export default function AdminPage() {
               <h2 className="text-xl font-bold text-[#1e293b] mb-4">
                 All Listings ({companies.length})
               </h2>
+              {companies.length > 0 && (
+                <input
+                  type="text"
+                  value={listingSearch}
+                  onChange={(e) => setListingSearch(e.target.value)}
+                  placeholder="Search vendors..."
+                  className="w-full bg-white border border-[#e2e8f0] text-[#1e293b] rounded-lg px-4 py-2 text-sm mb-4 focus:outline-none focus:border-amber-400"
+                />
+              )}
               {companies.length === 0 ? (
                 <p className="text-[#64748b]">No listings yet.</p>
               ) : (
                 <div className="space-y-4">
-                  {companies.map((v) => (
+                  {companies.filter((v) => v.name.toLowerCase().includes(listingSearch.toLowerCase())).map((v) => (
                     <div key={v.id} className="bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-6">
                       {editingCompany?.id === v.id ? (
                         /* ---- Editing mode ---- */
