@@ -2,6 +2,7 @@ import { supabase } from '@/lib/supabase'
 import { getRatingFields, getAverageRating } from '@/lib/constants'
 import { CategoryBadge } from '@/components/CategoryBadge'
 import { StarRating } from '@/components/StarRating'
+import { SocialLinks } from '@/components/SocialLinks'
 import { Company, Review } from '@/lib/types'
 import { notFound } from 'next/navigation'
 
@@ -62,6 +63,17 @@ export default async function CompanyDetailPage({ params }: { params: { slug: st
             {typedCompany.website} &#8599;
           </a>
         )}
+        <div className="mt-3">
+          <SocialLinks
+            facebook_url={typedCompany.facebook_url}
+            instagram_url={typedCompany.instagram_url}
+            linkedin_url={typedCompany.linkedin_url}
+            youtube_url={typedCompany.youtube_url}
+            tiktok_url={typedCompany.tiktok_url}
+            twitter_url={typedCompany.twitter_url}
+            website_url={typedCompany.website_url}
+          />
+        </div>
       </div>
 
       {/* Overall Rating */}

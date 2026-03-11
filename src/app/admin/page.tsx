@@ -138,8 +138,36 @@ export default function AdminPage() {
 
   // ---- Company CRUD ----
 
+  function isValidUrl(url: string): boolean {
+    try {
+      new URL(url)
+      return true
+    } catch {
+      return false
+    }
+  }
+
   async function saveCompany() {
     if (!editingCompany) return
+
+    const socialFields = [
+      { key: 'facebook_url', label: 'Facebook' },
+      { key: 'instagram_url', label: 'Instagram' },
+      { key: 'linkedin_url', label: 'LinkedIn' },
+      { key: 'youtube_url', label: 'YouTube' },
+      { key: 'tiktok_url', label: 'TikTok' },
+      { key: 'twitter_url', label: 'Twitter/X' },
+      { key: 'website_url', label: 'Website' },
+    ] as const
+
+    for (const field of socialFields) {
+      const val = editingCompany[field.key]
+      if (val && !isValidUrl(val)) {
+        alert(`Invalid URL for ${field.label}: ${val}`)
+        return
+      }
+    }
+
     const { error } = await supabase
       .from('companies')
       .update({
@@ -147,6 +175,13 @@ export default function AdminPage() {
         category: editingCompany.category,
         website: editingCompany.website,
         description: editingCompany.description,
+        facebook_url: editingCompany.facebook_url,
+        instagram_url: editingCompany.instagram_url,
+        linkedin_url: editingCompany.linkedin_url,
+        youtube_url: editingCompany.youtube_url,
+        tiktok_url: editingCompany.tiktok_url,
+        twitter_url: editingCompany.twitter_url,
+        website_url: editingCompany.website_url,
       })
       .eq('id', editingCompany.id)
 
@@ -430,6 +465,31 @@ export default function AdminPage() {
                               rows={3}
                               className="w-full bg-white border border-[#e2e8f0] text-[#1e293b] rounded-lg px-3 py-2 text-sm"
                             />
+                          </div>
+                          <div className="border-t border-[#e2e8f0] pt-4">
+                            <label className="block text-sm font-medium text-[#1e293b] mb-3">Social Links</label>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                              {([
+                                { key: 'facebook_url' as const, label: 'Facebook' },
+                                { key: 'instagram_url' as const, label: 'Instagram' },
+                                { key: 'linkedin_url' as const, label: 'LinkedIn' },
+                                { key: 'youtube_url' as const, label: 'YouTube' },
+                                { key: 'tiktok_url' as const, label: 'TikTok' },
+                                { key: 'twitter_url' as const, label: 'Twitter/X' },
+                                { key: 'website_url' as const, label: 'Website' },
+                              ]).map((field) => (
+                                <div key={field.key}>
+                                  <label className="block text-xs text-[#64748b] mb-1">{field.label}</label>
+                                  <input
+                                    type="url"
+                                    value={editingCompany[field.key] || ''}
+                                    onChange={(e) => setEditingCompany({ ...editingCompany, [field.key]: e.target.value || null })}
+                                    placeholder={`https://...`}
+                                    className="w-full bg-white border border-[#e2e8f0] text-[#1e293b] rounded-lg px-3 py-2 text-sm"
+                                  />
+                                </div>
+                              ))}
+                            </div>
                           </div>
                           <div className="flex gap-3">
                             <button
