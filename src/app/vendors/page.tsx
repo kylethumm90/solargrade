@@ -16,6 +16,7 @@ export default function VendorsPage() {
   const [vendors, setVendors] = useState<VendorWithStats[]>([])
   const [category, setCategory] = useState('')
   const [sort, setSort] = useState('rating')
+  const [search, setSearch] = useState('')
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -63,6 +64,14 @@ export default function VendorsPage() {
       <h1 className="text-3xl font-bold text-[#1e293b] mb-8">Vendor Directory</h1>
 
       <div className="flex flex-wrap gap-4 mb-8">
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search vendors..."
+          className="bg-white border border-[#e2e8f0] text-[#1e293b] rounded-lg px-4 py-2 text-sm flex-1 min-w-[200px]"
+        />
+
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
@@ -100,7 +109,9 @@ export default function VendorsPage() {
         <p className="text-[#64748b]">No vendors found.</p>
       ) : (
         <div className="grid md:grid-cols-2 gap-4">
-          {vendors.map((vendor) => (
+          {vendors.filter((vendor) =>
+            vendor.name.toLowerCase().includes(search.toLowerCase())
+          ).map((vendor) => (
             <a
               key={vendor.id}
               href={`/vendors/${vendor.slug}`}
