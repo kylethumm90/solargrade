@@ -1,4 +1,4 @@
-export interface Vendor {
+export interface Company {
   id: string
   slug: string
   name: string
@@ -11,7 +11,7 @@ export interface Vendor {
 
 export interface Review {
   id: string
-  vendor_id: string
+  company_id: string
   reviewer_name: string
   company: string | null
   relationship: string | null
@@ -20,13 +20,13 @@ export interface Review {
   created_at: string
 }
 
-export interface VendorWithReviews extends Vendor {
+export interface CompanyWithReviews extends Company {
   reviews: Review[]
   avg_rating: number
   review_count: number
 }
 
-export interface PendingVendor {
+export interface PendingCompany {
   id: string
   name: string
   category: string
@@ -35,18 +35,18 @@ export interface PendingVendor {
   submitted_at: string
 }
 
-export interface ReviewWithVendor extends Review {
-  vendors?: { name: string; category: string }
+export interface ReviewWithCompany extends Review {
+  companies?: { name: string; category: string }
 }
 
 export interface PendingReview {
   id: string
-  vendor_id: string
+  company_id: string
   reviewer_name: string
   company: string | null
   relationship: string | null
   ratings: Record<string, number>
   review_text: string
   submitted_at: string
-  vendors?: { name: string; category: string }
+  companies?: { name: string; category: string }
 }

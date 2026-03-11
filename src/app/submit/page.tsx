@@ -29,7 +29,7 @@ export default function SubmitPage() {
       .replace(/\s+/g, '-')
       .replace(/-+/g, '-')
 
-    const { error: submitError } = await supabase.from('vendors').insert({
+    const { error: submitError } = await supabase.from('companies').insert({
       slug,
       name,
       category,
@@ -56,10 +56,10 @@ export default function SubmitPage() {
           <div className="text-4xl mb-4">&#10003;</div>
           <h2 className="text-2xl font-bold text-[#1e293b] mb-2">Company Added!</h2>
           <p className="text-[#64748b] mb-6">
-            Your company has been added to the vendor directory.
+            Your company has been added to the directory.
           </p>
-          <a href="/vendors" className="text-amber-600 hover:text-amber-500">
-            Browse Vendors
+          <a href="/companies" className="text-amber-600 hover:text-amber-500">
+            Browse Companies
           </a>
         </div>
       </div>

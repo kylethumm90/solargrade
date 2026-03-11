@@ -1,8 +1,8 @@
--- SolarGrade Vendors Seed Data
+-- SolarGrade Companies Seed Data
 -- Generated 2026-03-11
 -- Usage: Paste into Supabase SQL Editor and run
 
-INSERT INTO vendors (name, slug, category, website, description, approved)
+INSERT INTO companies (name, slug, category, website, description, approved)
 VALUES
   ('Sunrun', 'sunrun', 'installers', 'https://www.sunrun.com/', 'Largest US residential solar installer with ~21% market share. Over 7.5 GW installed across 50+ states; offers solar, storage, and virtual power plant services. Acquired Vivint Solar in 2020 for $3.2B.', true),
   ('Tesla Energy', 'tesla-energy', 'installers', 'https://www.tesla.com/energy', 'Dominates solar-plus-storage market; manufactures own panels at Buffalo NY facility. Powerwall controls ~63% of residential battery market. Acquired SolarCity in 2016.', true),
@@ -108,7 +108,7 @@ VALUES
   ('Elite Call Center', 'elite-call-center', 'callcenter', 'https://elitecall.net/', 'Established call center (founded 1998) offering outsourced appointment setting, lead qualification, and customer support for utilities and solar energy sectors.', true),
   ('Map Communications', 'map-communications', 'callcenter', 'https://www.mapcommunications.com/', 'Decades-long industry leader in utilities/solar call center and phone answering services. Handles appointment setting, lead qualification, and customer service.', true),
   ('Calling Agency', 'calling-agency', 'callcenter', 'https://callingagency.com/', 'Specialized solar appointment setting provider for both established companies and startups. Develops targeted calling strategies with live transfer capabilities.', true),
-  ('Outsource Consultants', 'outsource-consultants', 'callcenter', 'https://www.outsource-consultants.com/', 'Call center broker managing vetted solar vendor networks. Provides appointment setting, lead generation, and customer support tailored to residential solar.', true),
+  ('Outsource Consultants', 'outsource-consultants', 'callcenter', 'https://www.outsource-consultants.com/', 'Call center broker managing vetted solar company networks. Provides appointment setting, lead generation, and customer support tailored to residential solar.', true),
   ('Storm911', 'storm911', 'callcenter', 'https://storm911.com/', 'Proactive cold-calling appointment setter with fast-to-market approach for solar lead generation and residential prospect conversion.', true),
   ('Boomsourcing', 'boomsourcing', 'callcenter', 'https://www.boomsourcing.com/', 'BPO provider with 20+ years experience using AI and automation for solar lead capture, qualification, appointment setting, and customer management.', true),
   ('Nextiva', 'nextiva', 'callcenter', 'https://www.nextiva.com/', 'AI-powered contact center platform with automated chatbot/SMS responses and seamless live agent transfer for solar and energy companies.', true),

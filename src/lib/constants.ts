@@ -1,6 +1,6 @@
 export const CATEGORIES = [
   { value: 'installers', label: 'Installers / EPCs', color: '#f59e0b' },
-  { value: 'leads', label: 'Lead Vendors', color: '#3b82f6' },
+  { value: 'leads', label: 'Lead Companies', color: '#3b82f6' },
   { value: 'crm', label: 'CRM Systems', color: '#8b5cf6' },
   { value: 'callcenter', label: 'Call Centers', color: '#10b981' },
   { value: 'financing', label: 'Financing', color: '#ec4899' },

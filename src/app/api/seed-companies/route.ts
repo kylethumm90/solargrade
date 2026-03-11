@@ -9,7 +9,7 @@ function toSlug(name: string): string {
     .replace(/-+/g, '-')
 }
 
-const vendors = [
+const companies = [
   { name: 'Apricot Solar', category: 'installers', website: 'https://apricotsolar.com', description: 'Growing residential installer operating in multiple Western states. Known for transparent pricing and customer-first approach.' },
   { name: 'SunPro Solar (Legacy)', category: 'installers', website: null, description: 'Original brand before ADT acquisition. Some markets still reference the SunPro name. See ADT Solar for current status.' },
   { name: 'Enphase Certified Installer Network', category: 'installers', website: 'https://enphase.com/installers', description: 'Network of Enphase-certified local installers. Quality varies by individual installer but Enphase certification provides a baseline standard.' },
@@ -58,7 +58,7 @@ const vendors = [
 ]
 
 export async function POST() {
-  const rows = vendors.map((v) => ({
+  const rows = companies.map((v) => ({
     slug: toSlug(v.name),
     name: v.name,
     category: v.category,
@@ -67,11 +67,11 @@ export async function POST() {
     approved: true,
   }))
 
-  const { data, error } = await supabase.from('vendors').insert(rows).select()
+  const { data, error } = await supabase.from('companies').insert(rows).select()
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
-  return NextResponse.json({ inserted: data.length, vendors: data.map((v) => v.name) })
+  return NextResponse.json({ inserted: data.length, companies: data.map((v) => v.name) })
 }
