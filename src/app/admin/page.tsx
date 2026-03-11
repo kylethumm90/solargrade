@@ -118,7 +118,7 @@ export default function AdminPage() {
 
   async function approveReview(pr: PendingReview) {
     const { error } = await supabase.from('reviews').insert({
-      company_id: pr.company_id,
+      vendor_id: pr.vendor_id,
       reviewer_name: pr.reviewer_name,
       company: pr.company,
       relationship: pr.relationship,

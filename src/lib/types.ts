@@ -19,7 +19,7 @@ export interface Company {
 
 export interface Review {
   id: string
-  company_id: string
+  vendor_id: string
   reviewer_name: string
   company: string | null
   relationship: string | null
@@ -49,7 +49,7 @@ export interface ReviewWithCompany extends Review {
 
 export interface PendingReview {
   id: string
-  company_id: string
+  vendor_id: string
   reviewer_name: string
   company: string | null
   relationship: string | null

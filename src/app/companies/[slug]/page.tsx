@@ -21,7 +21,7 @@ export default async function CompanyDetailPage({ params }: { params: { slug: st
   const { data: reviews } = await supabase
     .from('reviews')
     .select('*')
-    .eq('company_id', companyData.id)
+    .eq('vendor_id', companyData.id)
     .order('created_at', { ascending: false })
 
   const typedCompany = companyData as Company
