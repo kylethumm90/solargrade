@@ -11,7 +11,12 @@ const ADMIN_PASSWORD = 'solargrade2026'
 type Tab = 'pending' | 'listings' | 'reviews'
 
 export default function AdminPage() {
-  const [authenticated, setAuthenticated] = useState(false)
+  const [authenticated, setAuthenticated] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return sessionStorage.getItem('sg_admin') === 'true'
+    }
+    return false
+  })
   const [password, setPassword] = useState('')
   const [activeTab, setActiveTab] = useState<Tab>('pending')
 
@@ -33,6 +38,7 @@ export default function AdminPage() {
     e.preventDefault()
     if (password === ADMIN_PASSWORD) {
       setAuthenticated(true)
+      sessionStorage.setItem('sg_admin', 'true')
     }
   }
 
@@ -152,7 +158,11 @@ export default function AdminPage() {
 
   async function deleteVendor(id: string) {
     if (!confirm('Delete this listing and all its reviews? This cannot be undone.')) return
-    await supabase.from('vendors').delete().eq('id', id)
+    const { error } = await supabase.from('vendors').delete().eq('id', id)
+    if (error) {
+      alert('Failed to delete vendor: ' + error.message)
+      return
+    }
     loadVendors()
     loadReviews()
   }
@@ -180,7 +190,11 @@ export default function AdminPage() {
 
   async function deleteReview(id: string) {
     if (!confirm('Delete this review? This cannot be undone.')) return
-    await supabase.from('reviews').delete().eq('id', id)
+    const { error } = await supabase.from('reviews').delete().eq('id', id)
+    if (error) {
+      alert('Failed to delete review: ' + error.message)
+      return
+    }
     loadReviews()
   }
 
