@@ -39,7 +39,7 @@ export default function CompaniesPage() {
       }
 
       const mapped = companyData.map((v: Company) => {
-        const vReviews = (reviewData || []).filter((r: Review) => r.company_id === v.id)
+        const vReviews = (reviewData || []).filter((r: Review) => r.vendor_id === v.id)
         const avgRatings = vReviews.map((r: Review) => getAverageRating(r.ratings))
         const avg = avgRatings.length > 0
           ? avgRatings.reduce((a: number, b: number) => a + b, 0) / avgRatings.length
