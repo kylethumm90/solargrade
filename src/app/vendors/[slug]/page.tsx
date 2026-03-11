@@ -118,10 +118,15 @@ export default async function VendorDetailPage({ params }: { params: { slug: str
               className="bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-6"
             >
               <div className="flex items-center justify-between mb-3">
-                <div>
+                <div className="flex items-center gap-2 flex-wrap">
                   <span className="font-semibold text-[#1e293b]">{review.reviewer_name}</span>
+                  {review.relationship && (
+                    <span className="inline-block text-xs font-medium bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">
+                      {review.relationship}
+                    </span>
+                  )}
                   {review.company && (
-                    <span className="text-[#64748b] text-sm ml-2">at {review.company}</span>
+                    <span className="text-[#64748b] text-sm">at {review.company}</span>
                   )}
                 </div>
                 <span className="text-xs text-[#64748b]">

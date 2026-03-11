@@ -19,6 +19,7 @@ create table reviews (
   vendor_id uuid references vendors(id) on delete cascade,
   reviewer_name text not null,
   company text,
+  relationship text,
   ratings jsonb not null,
   review_text text not null,
   created_at timestamptz default now()
@@ -40,6 +41,7 @@ create table pending_reviews (
   vendor_id uuid references vendors(id) on delete cascade,
   reviewer_name text not null,
   company text,
+  relationship text,
   ratings jsonb not null,
   review_text text not null,
   submitted_at timestamptz default now()

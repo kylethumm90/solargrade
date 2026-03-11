@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
-import { CATEGORIES, getRatingFields } from '@/lib/constants'
+import { CATEGORIES, getRatingFields, INSTALLER_RELATIONSHIPS } from '@/lib/constants'
 import { StarInput } from '@/components/StarRating'
 import { Vendor } from '@/lib/types'
 
@@ -13,6 +13,7 @@ export default function ReviewPage() {
   const [company, setCompany] = useState('')
   const [reviewText, setReviewText] = useState('')
   const [ratings, setRatings] = useState<Record<string, number>>({})
+  const [relationship, setRelationship] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState('')
@@ -39,8 +40,11 @@ export default function ReviewPage() {
   const vendor = vendors.find((v) => v.id === selectedVendor)
   const ratingFields = vendor ? getRatingFields(vendor.category) : []
 
+  const isInstaller = vendor?.category === 'installers'
+
   useEffect(() => {
     setRatings({})
+    setRelationship('')
   }, [selectedVendor])
 
   async function handleSubmit(e: React.FormEvent) {
@@ -58,11 +62,17 @@ export default function ReviewPage() {
       return
     }
 
+    if (isInstaller && !relationship) {
+      setError('Please select your relationship to this company.')
+      return
+    }
+
     setSubmitting(true)
     const { error: submitError } = await supabase.from('pending_reviews').insert({
       vendor_id: selectedVendor,
       reviewer_name: reviewerName,
       company: company || null,
+      relationship: isInstaller ? relationship : null,
       ratings,
       review_text: reviewText,
     })
@@ -146,6 +156,28 @@ export default function ReviewPage() {
                 />
               ))}
             </div>
+          </div>
+        )}
+
+        {/* Relationship (installers only) */}
+        {isInstaller && (
+          <div>
+            <label className="block text-sm font-medium text-[#1e293b] mb-2">
+              Your Relationship *
+            </label>
+            <select
+              value={relationship}
+              onChange={(e) => setRelationship(e.target.value)}
+              className="w-full bg-white border border-[#e2e8f0] text-[#1e293b] rounded-lg px-4 py-3"
+              required
+            >
+              <option value="">Select your relationship...</option>
+              {INSTALLER_RELATIONSHIPS.map((rel) => (
+                <option key={rel} value={rel}>
+                  {rel}
+                </option>
+              ))}
+            </select>
           </div>
         )}
 

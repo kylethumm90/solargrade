@@ -76,6 +76,7 @@ export default function AdminPage() {
       vendor_id: pr.vendor_id,
       reviewer_name: pr.reviewer_name,
       company: pr.company,
+      relationship: pr.relationship,
       ratings: pr.ratings,
       review_text: pr.review_text,
     })
@@ -197,6 +198,11 @@ export default function AdminPage() {
                           </h3>
                           <p className="text-[#64748b] text-sm">
                             by {pr.reviewer_name}
+                            {pr.relationship && (
+                              <span className="inline-block text-xs font-medium bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full ml-2">
+                                {pr.relationship}
+                              </span>
+                            )}
                             {pr.company && ` at ${pr.company}`}
                           </p>
                         </div>
