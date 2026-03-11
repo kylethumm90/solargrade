@@ -52,6 +52,11 @@ export default function RootLayout({
               SolarGrade -- Built for solar professionals, by solar professionals
             </p>
             <p className="text-[#64748b]/60 text-xs mt-2">A Solar Growth Project initiative</p>
+            <div className="flex items-center justify-center gap-3 mt-3 text-xs text-[#64748b]/60">
+              <a href="/terms" className="hover:text-[#64748b] transition-colors">Terms of Service</a>
+              <span>·</span>
+              <a href="/content-policy" className="hover:text-[#64748b] transition-colors">Content Policy</a>
+            </div>
           </div>
         </footer>
       </body>
