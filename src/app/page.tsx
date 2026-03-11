@@ -32,7 +32,15 @@ async function getTopVendors() {
       avgRatings.length > 0
         ? avgRatings.reduce((a: number, b: number) => a + b, 0) / avgRatings.length
         : 0
-    return { ...vendor, avg_rating: avgRating, review_count: vendorReviews.length }
+
+    // Calculate recommendation percentage
+    const withRecommend = vendorReviews.filter((r: Review) => r.would_recommend !== null && r.would_recommend !== undefined)
+    const recommendCount = withRecommend.filter((r: Review) => r.would_recommend === true).length
+    const recommend_pct = withRecommend.length >= 2
+      ? Math.round((recommendCount / withRecommend.length) * 100)
+      : null
+
+    return { ...vendor, avg_rating: avgRating, review_count: vendorReviews.length, recommend_pct }
   })
 
   return vendorMap
@@ -100,6 +108,46 @@ export default async function HomePage() {
       </section>
 
       {/* Top Rated */}
+      {topVendors.length > 0 && (
+        <section className="max-w-6xl mx-auto px-4 py-12">
+          <h2 className="text-2xl font-bold text-[#1e293b] mb-6">Top Rated</h2>
+          <div className="space-y-3">
+            {topVendors.map((vendor, i) => (
+              <a
+                key={vendor.id}
+                href={`/vendors/${vendor.slug}`}
+                className="flex items-center gap-4 p-4 rounded-xl bg-[#f8fafc] border border-[#e2e8f0] hover:border-amber-500/30 transition-all duration-200"
+              >
+                <span className="text-2xl font-bold text-[#64748b] w-8 text-center">
+                  {i + 1}
+                </span>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="font-semibold text-[#1e293b]">{vendor.name}</span>
+                    <CategoryBadge category={vendor.category} />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <StarRating rating={vendor.avg_rating} size="sm" />
+                    <span className="text-sm text-[#64748b]">
+                      {vendor.avg_rating.toFixed(1)} ({vendor.review_count}{' '}
+                      {vendor.review_count === 1 ? 'review' : 'reviews'})
+                    </span>
+                    {vendor.recommend_pct !== null && (
+                      <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+                        vendor.recommend_pct >= 50
+                          ? 'bg-green-100 text-green-700'
+                          : 'bg-red-100 text-red-700'
+                      }`}>
+                        {vendor.recommend_pct}% recommend
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
       {topVendors.length > 0 && <TopRatedSection vendors={topVendors} />}
       {/* CTA */}
       <section className="max-w-6xl mx-auto px-4 py-16">

@@ -122,6 +122,9 @@ export default function AdminPage() {
       relationship: pr.relationship,
       ratings: pr.ratings,
       review_text: pr.review_text,
+      duration: pr.duration,
+      project_count: pr.project_count,
+      would_recommend: pr.would_recommend,
     })
 
     if (!error) {
@@ -179,6 +182,9 @@ export default function AdminPage() {
         relationship: editingReview.relationship,
         review_text: editingReview.review_text,
         ratings: editingReview.ratings,
+        duration: editingReview.duration,
+        project_count: editingReview.project_count,
+        would_recommend: editingReview.would_recommend,
       })
       .eq('id', editingReview.id)
 
@@ -353,6 +359,25 @@ export default function AdminPage() {
                               )
                             })}
                           </div>
+                          {(pr.duration || pr.project_count) && (
+                            <div className="flex gap-2 mb-3">
+                              {pr.duration && (
+                                <span className="inline-block text-xs font-medium bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">
+                                  {pr.duration}
+                                </span>
+                              )}
+                              {pr.project_count && (
+                                <span className="inline-block text-xs font-medium bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">
+                                  {pr.project_count} installs
+                                </span>
+                              )}
+                            </div>
+                          )}
+                          {pr.would_recommend !== null && pr.would_recommend !== undefined && (
+                            <p className={`text-xs font-medium mb-3 ${pr.would_recommend ? 'text-green-600' : 'text-red-600'}`}>
+                              {pr.would_recommend ? 'Would recommend' : 'Would not recommend'}
+                            </p>
+                          )}
                           <p className="text-[#1e293b] text-sm mb-4">{pr.review_text}</p>
                           <div className="flex gap-3">
                             <button
@@ -542,6 +567,38 @@ export default function AdminPage() {
                                 className="w-full bg-white border border-[#e2e8f0] text-[#1e293b] rounded-lg px-3 py-2 text-sm"
                               />
                             </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div>
+                                <label className="block text-sm font-medium text-[#1e293b] mb-1">Duration</label>
+                                <input
+                                  type="text"
+                                  value={editingReview.duration || ''}
+                                  onChange={(e) => setEditingReview({ ...editingReview, duration: e.target.value || null })}
+                                  className="w-full bg-white border border-[#e2e8f0] text-[#1e293b] rounded-lg px-3 py-2 text-sm"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium text-[#1e293b] mb-1">Project Count</label>
+                                <input
+                                  type="text"
+                                  value={editingReview.project_count || ''}
+                                  onChange={(e) => setEditingReview({ ...editingReview, project_count: e.target.value || null })}
+                                  className="w-full bg-white border border-[#e2e8f0] text-[#1e293b] rounded-lg px-3 py-2 text-sm"
+                                />
+                              </div>
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-[#1e293b] mb-1">Would Recommend</label>
+                              <select
+                                value={editingReview.would_recommend === null || editingReview.would_recommend === undefined ? '' : editingReview.would_recommend ? 'yes' : 'no'}
+                                onChange={(e) => setEditingReview({ ...editingReview, would_recommend: e.target.value === '' ? null : e.target.value === 'yes' })}
+                                className="w-full bg-white border border-[#e2e8f0] text-[#1e293b] rounded-lg px-3 py-2 text-sm"
+                              >
+                                <option value="">Not set</option>
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                              </select>
+                            </div>
                             <div>
                               <label className="block text-sm font-medium text-[#1e293b] mb-2">Ratings</label>
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -624,6 +681,25 @@ export default function AdminPage() {
                                 )
                               })}
                             </div>
+                            {(r.duration || r.project_count) && (
+                              <div className="flex gap-2 mb-3">
+                                {r.duration && (
+                                  <span className="inline-block text-xs font-medium bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">
+                                    {r.duration}
+                                  </span>
+                                )}
+                                {r.project_count && (
+                                  <span className="inline-block text-xs font-medium bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">
+                                    {r.project_count} installs
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                            {r.would_recommend !== null && r.would_recommend !== undefined && (
+                              <p className={`text-xs font-medium mb-3 ${r.would_recommend ? 'text-green-600' : 'text-red-600'}`}>
+                                {r.would_recommend ? 'Would recommend' : 'Would not recommend'}
+                              </p>
+                            )}
                             <p className="text-[#1e293b] text-sm mb-4">{r.review_text}</p>
                             <div className="flex gap-3">
                               <button

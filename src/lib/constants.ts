@@ -13,9 +13,8 @@ export const INSTALLER_RATINGS = [
   { key: 'payReliability', label: 'Payment Reliability' },
   { key: 'communication', label: 'Communication' },
   { key: 'installQuality', label: 'Install Quality' },
-  { key: 'customerSupport', label: 'Customer Support' },
-  { key: 'installSpeed', label: 'Install Speed' },
-  { key: 'wouldRecommend', label: 'Would Recommend' },
+  { key: 'warrantySupport', label: 'Warranty Support' },
+  { key: 'transparency', label: 'Transparency' },
 ] as const
 
 export const VENDOR_RATINGS = [
@@ -24,7 +23,6 @@ export const VENDOR_RATINGS = [
   { key: 'integration', label: 'Integration / Ease of Use' },
   { key: 'roi', label: 'ROI' },
   { key: 'transparency', label: 'Transparency' },
-  { key: 'reliability', label: 'Reliability' },
 ] as const
 
 export const CRM_RATINGS = [
@@ -33,7 +31,6 @@ export const CRM_RATINGS = [
   { key: 'integration', label: 'Integration / Ease of Use' },
   { key: 'roi', label: 'ROI' },
   { key: 'reporting', label: 'Reporting / Analytics' },
-  { key: 'reliability', label: 'Reliability' },
 ] as const
 
 export const SOFTWARE_RATINGS = [
@@ -42,7 +39,6 @@ export const SOFTWARE_RATINGS = [
   { key: 'accuracy', label: 'Data Accuracy' },
   { key: 'integration', label: 'Integration / Compatibility' },
   { key: 'roi', label: 'ROI' },
-  { key: 'reliability', label: 'Reliability' },
 ] as const
 
 export function getRatingFields(category: string) {
@@ -68,6 +64,21 @@ export const INSTALLER_RELATIONSHIPS = [
 ] as const
 
 export type InstallerRelationship = (typeof INSTALLER_RELATIONSHIPS)[number]
+
+export const DURATION_OPTIONS = [
+  'One-time project',
+  'Less than 6 months',
+  '6 months to 1 year',
+  '1-2 years',
+  '2+ years',
+] as const
+
+export const PROJECT_COUNT_OPTIONS = [
+  '1-5',
+  '6-20',
+  '21-50',
+  '50+',
+] as const
 
 export function getAverageRating(ratings: Record<string, number>): number {
   const values = Object.values(ratings)
