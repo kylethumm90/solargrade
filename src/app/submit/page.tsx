@@ -23,11 +23,19 @@ export default function SubmitPage() {
     }
 
     setSubmitting(true)
-    const { error: submitError } = await supabase.from('pending_vendors').insert({
+    const slug = name
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+
+    const { error: submitError } = await supabase.from('vendors').insert({
+      slug,
       name,
       category,
       website: website || null,
       description: description || null,
+      approved: true,
     })
 
     if (submitError) {
@@ -45,9 +53,9 @@ export default function SubmitPage() {
       <div className="max-w-2xl mx-auto px-4 py-20 text-center">
         <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-8">
           <div className="text-4xl mb-4">&#10003;</div>
-          <h2 className="text-2xl font-bold text-[#1e293b] mb-2">Company Submitted!</h2>
+          <h2 className="text-2xl font-bold text-[#1e293b] mb-2">Company Added!</h2>
           <p className="text-[#64748b] mb-6">
-            Your submission has been received and will be reviewed by our team.
+            Your company has been added to the vendor directory.
           </p>
           <a href="/vendors" className="text-amber-600 hover:text-amber-500">
             Browse Vendors
