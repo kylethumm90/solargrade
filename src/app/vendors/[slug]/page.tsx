@@ -41,6 +41,13 @@ export default async function VendorDetailPage({ params }: { params: { slug: str
     return { ...field, average: avg }
   })
 
+  // Calculate recommendation percentage
+  const reviewsWithRecommend = typedReviews.filter((r) => r.would_recommend !== null && r.would_recommend !== undefined)
+  const recommendCount = reviewsWithRecommend.filter((r) => r.would_recommend === true).length
+  const recommendPct = reviewsWithRecommend.length >= 2
+    ? Math.round((recommendCount / reviewsWithRecommend.length) * 100)
+    : null
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
       {/* Header */}
@@ -76,6 +83,13 @@ export default async function VendorDetailPage({ params }: { params: { slug: str
               {typedReviews.length} {typedReviews.length === 1 ? 'review' : 'reviews'}
             </p>
           </div>
+          {recommendPct !== null && (
+            <div className="ml-auto">
+              <span className={`text-2xl font-bold ${recommendPct >= 50 ? 'text-green-500' : 'text-red-500'}`}>
+                {recommendPct}% recommend
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Rating Breakdown */}
@@ -128,6 +142,16 @@ export default async function VendorDetailPage({ params }: { params: { slug: str
                   {review.company && (
                     <span className="text-[#64748b] text-sm">at {review.company}</span>
                   )}
+                  {review.duration && (
+                    <span className="inline-block text-xs font-medium bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">
+                      {review.duration}
+                    </span>
+                  )}
+                  {review.project_count && (
+                    <span className="inline-block text-xs font-medium bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">
+                      {review.project_count} installs
+                    </span>
+                  )}
                 </div>
                 <span className="text-xs text-[#64748b]">
                   {new Date(review.created_at).toLocaleDateString()}
@@ -146,6 +170,12 @@ export default async function VendorDetailPage({ params }: { params: { slug: str
                   )
                 })}
               </div>
+
+              {review.would_recommend !== null && review.would_recommend !== undefined && (
+                <p className={`text-xs font-medium mb-3 ${review.would_recommend ? 'text-green-600' : 'text-red-600'}`}>
+                  {review.would_recommend ? 'Would recommend' : 'Would not recommend'}
+                </p>
+              )}
 
               <p className="text-[#1e293b] text-sm leading-relaxed">{review.review_text}</p>
             </div>

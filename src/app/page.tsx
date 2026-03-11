@@ -33,7 +33,15 @@ async function getTopVendors() {
       avgRatings.length > 0
         ? avgRatings.reduce((a: number, b: number) => a + b, 0) / avgRatings.length
         : 0
-    return { ...vendor, avg_rating: avgRating, review_count: vendorReviews.length }
+
+    // Calculate recommendation percentage
+    const withRecommend = vendorReviews.filter((r: Review) => r.would_recommend !== null && r.would_recommend !== undefined)
+    const recommendCount = withRecommend.filter((r: Review) => r.would_recommend === true).length
+    const recommend_pct = withRecommend.length >= 2
+      ? Math.round((recommendCount / withRecommend.length) * 100)
+      : null
+
+    return { ...vendor, avg_rating: avgRating, review_count: vendorReviews.length, recommend_pct }
   })
 
   return vendorMap
@@ -126,6 +134,15 @@ export default async function HomePage() {
                       {vendor.avg_rating.toFixed(1)} ({vendor.review_count}{' '}
                       {vendor.review_count === 1 ? 'review' : 'reviews'})
                     </span>
+                    {vendor.recommend_pct !== null && (
+                      <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+                        vendor.recommend_pct >= 50
+                          ? 'bg-green-100 text-green-700'
+                          : 'bg-red-100 text-red-700'
+                      }`}>
+                        {vendor.recommend_pct}% recommend
+                      </span>
+                    )}
                   </div>
                 </div>
               </a>

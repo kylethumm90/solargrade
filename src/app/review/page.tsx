@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
-import { CATEGORIES, getRatingFields, INSTALLER_RELATIONSHIPS } from '@/lib/constants'
+import { CATEGORIES, getRatingFields, INSTALLER_RELATIONSHIPS, DURATION_OPTIONS, PROJECT_COUNT_OPTIONS } from '@/lib/constants'
 import { StarInput } from '@/components/StarRating'
 import { Vendor } from '@/lib/types'
 
@@ -14,6 +14,9 @@ export default function ReviewPage() {
   const [reviewText, setReviewText] = useState('')
   const [ratings, setRatings] = useState<Record<string, number>>({})
   const [relationship, setRelationship] = useState('')
+  const [duration, setDuration] = useState('')
+  const [projectCount, setProjectCount] = useState('')
+  const [wouldRecommend, setWouldRecommend] = useState<boolean | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState('')
@@ -45,6 +48,9 @@ export default function ReviewPage() {
   useEffect(() => {
     setRatings({})
     setRelationship('')
+    setDuration('')
+    setProjectCount('')
+    setWouldRecommend(null)
   }, [selectedVendor])
 
   async function handleSubmit(e: React.FormEvent) {
@@ -75,6 +81,9 @@ export default function ReviewPage() {
       relationship: isInstaller ? relationship : null,
       ratings,
       review_text: reviewText,
+      duration: duration || null,
+      project_count: isInstaller ? (projectCount || null) : null,
+      would_recommend: wouldRecommend,
     })
 
     if (submitError) {
@@ -209,6 +218,48 @@ export default function ReviewPage() {
           />
         </div>
 
+        {/* Duration */}
+        {vendor && (
+          <div>
+            <label className="block text-sm font-medium text-[#1e293b] mb-2">
+              How long did you work with this company? (optional)
+            </label>
+            <select
+              value={duration}
+              onChange={(e) => setDuration(e.target.value)}
+              className="w-full bg-white border border-[#e2e8f0] text-[#1e293b] rounded-lg px-4 py-3"
+            >
+              <option value="">Select duration...</option>
+              {DURATION_OPTIONS.map((opt) => (
+                <option key={opt} value={opt}>
+                  {opt}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        {/* Project Count (installers only) */}
+        {isInstaller && (
+          <div>
+            <label className="block text-sm font-medium text-[#1e293b] mb-2">
+              How many installs/projects together? (optional)
+            </label>
+            <select
+              value={projectCount}
+              onChange={(e) => setProjectCount(e.target.value)}
+              className="w-full bg-white border border-[#e2e8f0] text-[#1e293b] rounded-lg px-4 py-3"
+            >
+              <option value="">Select count...</option>
+              {PROJECT_COUNT_OPTIONS.map((opt) => (
+                <option key={opt} value={opt}>
+                  {opt}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
         {/* Review Text */}
         <div>
           <label className="block text-sm font-medium text-[#1e293b] mb-2">Your Review *</label>
@@ -220,6 +271,39 @@ export default function ReviewPage() {
             required
           />
         </div>
+
+        {/* Would Recommend - Yes/No Toggle */}
+        {vendor && (
+          <div>
+            <label className="block text-sm font-medium text-[#1e293b] mb-3">
+              Would you recommend this company? (optional)
+            </label>
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => setWouldRecommend(wouldRecommend === true ? null : true)}
+                className={`flex-1 py-3 rounded-lg font-semibold text-sm transition-colors border-2 ${
+                  wouldRecommend === true
+                    ? 'bg-green-500 border-green-500 text-white'
+                    : 'bg-white border-[#e2e8f0] text-[#64748b] hover:border-green-300'
+                }`}
+              >
+                Yes
+              </button>
+              <button
+                type="button"
+                onClick={() => setWouldRecommend(wouldRecommend === false ? null : false)}
+                className={`flex-1 py-3 rounded-lg font-semibold text-sm transition-colors border-2 ${
+                  wouldRecommend === false
+                    ? 'bg-red-500 border-red-500 text-white'
+                    : 'bg-white border-[#e2e8f0] text-[#64748b] hover:border-red-300'
+                }`}
+              >
+                No
+              </button>
+            </div>
+          </div>
+        )}
 
         {error && <p className="text-red-600 text-sm">{error}</p>}
 

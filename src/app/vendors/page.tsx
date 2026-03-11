@@ -10,6 +10,7 @@ import { Vendor, Review } from '@/lib/types'
 interface VendorWithStats extends Vendor {
   avg_rating: number
   review_count: number
+  recommend_pct: number | null
 }
 
 export default function VendorsPage() {
@@ -44,7 +45,15 @@ export default function VendorsPage() {
         const avg = avgRatings.length > 0
           ? avgRatings.reduce((a: number, b: number) => a + b, 0) / avgRatings.length
           : 0
-        return { ...v, avg_rating: avg, review_count: vReviews.length }
+
+        // Calculate recommendation percentage
+        const withRecommend = vReviews.filter((r: Review) => r.would_recommend !== null && r.would_recommend !== undefined)
+        const recommendCount = withRecommend.filter((r: Review) => r.would_recommend === true).length
+        const recommend_pct = withRecommend.length >= 2
+          ? Math.round((recommendCount / withRecommend.length) * 100)
+          : null
+
+        return { ...v, avg_rating: avg, review_count: vReviews.length, recommend_pct }
       })
 
       mapped.sort((a, b) => {
@@ -130,6 +139,15 @@ export default function VendorsPage() {
                   {vendor.avg_rating > 0 ? vendor.avg_rating.toFixed(1) : 'No ratings'} ({vendor.review_count}{' '}
                   {vendor.review_count === 1 ? 'review' : 'reviews'})
                 </span>
+                {vendor.recommend_pct !== null && (
+                  <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+                    vendor.recommend_pct >= 50
+                      ? 'bg-green-100 text-green-700'
+                      : 'bg-red-100 text-red-700'
+                  }`}>
+                    {vendor.recommend_pct}% recommend
+                  </span>
+                )}
               </div>
             </a>
           ))}

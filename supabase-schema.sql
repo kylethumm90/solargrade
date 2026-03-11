@@ -22,6 +22,9 @@ create table reviews (
   relationship text,
   ratings jsonb not null,
   review_text text not null,
+  duration text,
+  project_count text,
+  would_recommend boolean,
   created_at timestamptz default now()
 );
 
@@ -44,6 +47,9 @@ create table pending_reviews (
   relationship text,
   ratings jsonb not null,
   review_text text not null,
+  duration text,
+  project_count text,
+  would_recommend boolean,
   submitted_at timestamptz default now()
 );
 

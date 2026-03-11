@@ -17,6 +17,9 @@ export interface Review {
   relationship: string | null
   ratings: Record<string, number>
   review_text: string
+  duration: string | null
+  project_count: string | null
+  would_recommend: boolean | null
   created_at: string
 }
 
@@ -47,6 +50,9 @@ export interface PendingReview {
   relationship: string | null
   ratings: Record<string, number>
   review_text: string
+  duration: string | null
+  project_count: string | null
+  would_recommend: boolean | null
   submitted_at: string
   vendors?: { name: string; category: string }
 }
