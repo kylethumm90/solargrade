@@ -85,7 +85,7 @@ async function seed() {
     approved: true,
   }))
 
-  const { data, error } = await supabase.from('companies').insert(rows).select()
+  const { data, error } = await supabase.from('vendors').insert(rows).select()
 
   if (error) {
     console.error('Error inserting companies:', error)

@@ -56,13 +56,13 @@ export default function AdminPage() {
   async function loadPending() {
     setLoading(true)
     const { data: pCompanies } = await supabase
-      .from('pending_companies')
+      .from('pending_vendors')
       .select('*')
       .order('submitted_at', { ascending: false })
 
     const { data: pReviews } = await supabase
       .from('pending_reviews')
-      .select('*, companies(name, category)')
+      .select('*, vendors(name, category)')
       .order('submitted_at', { ascending: false })
 
     setPendingCompanies(pCompanies || [])
@@ -72,7 +72,7 @@ export default function AdminPage() {
 
   async function loadCompanies() {
     const { data } = await supabase
-      .from('companies')
+      .from('vendors')
       .select('*')
       .order('name', { ascending: true })
     setCompanies(data || [])
@@ -81,7 +81,7 @@ export default function AdminPage() {
   async function loadReviews() {
     const { data } = await supabase
       .from('reviews')
-      .select('*, companies(name, category)')
+      .select('*, vendors(name, category)')
       .order('created_at', { ascending: false })
     setReviews((data as ReviewWithCompany[]) || [])
   }
@@ -95,7 +95,7 @@ export default function AdminPage() {
       .replace(/\s+/g, '-')
       .replace(/-+/g, '-')
 
-    const { error } = await supabase.from('companies').insert({
+    const { error } = await supabase.from('vendors').insert({
       slug,
       name: pc.name,
       category: pc.category,
@@ -105,14 +105,14 @@ export default function AdminPage() {
     })
 
     if (!error) {
-      await supabase.from('pending_companies').delete().eq('id', pc.id)
+      await supabase.from('pending_vendors').delete().eq('id', pc.id)
       loadPending()
       loadCompanies()
     }
   }
 
   async function rejectCompany(id: string) {
-    await supabase.from('pending_companies').delete().eq('id', id)
+    await supabase.from('pending_vendors').delete().eq('id', id)
     loadPending()
   }
 
@@ -171,7 +171,7 @@ export default function AdminPage() {
     }
 
     const { error } = await supabase
-      .from('companies')
+      .from('vendors')
       .update({
         name: editingCompany.name,
         category: editingCompany.category,
@@ -196,7 +196,7 @@ export default function AdminPage() {
 
   async function deleteCompany(id: string) {
     if (!confirm('Delete this listing and all its reviews? This cannot be undone.')) return
-    const { error } = await supabase.from('companies').delete().eq('id', id)
+    const { error } = await supabase.from('vendors').delete().eq('id', id)
     if (error) {
       alert('Failed to delete company: ' + error.message)
       return
@@ -225,7 +225,7 @@ export default function AdminPage() {
     const { data } = supabase.storage.from('logos').getPublicUrl(filePath)
 
     const { error: updateError } = await supabase
-      .from('companies')
+      .from('vendors')
       .update({ logo_url: data.publicUrl })
       .eq('id', companyId)
 
@@ -242,7 +242,7 @@ export default function AdminPage() {
 
   async function removeLogo(companyId: string) {
     const { error } = await supabase
-      .from('companies')
+      .from('vendors')
       .update({ logo_url: null })
       .eq('id', companyId)
 
@@ -405,14 +405,14 @@ export default function AdminPage() {
                 ) : (
                   <div className="space-y-4">
                     {pendingReviews.map((pr) => {
-                      const companyCategory = pr.companies?.category || 'installers'
+                      const companyCategory = pr.vendors?.category || 'installers'
                       const ratingFields = getRatingFields(companyCategory)
                       return (
                         <div key={pr.id} className="bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-6">
                           <div className="flex items-start justify-between mb-2">
                             <div>
                               <h3 className="font-semibold text-[#1e293b]">
-                                {pr.companies?.name || 'Unknown Company'}
+                                {pr.vendors?.name || 'Unknown Company'}
                               </h3>
                               <p className="text-[#64748b] text-sm">
                                 by {pr.reviewer_name}
@@ -657,7 +657,7 @@ export default function AdminPage() {
               ) : (
                 <div className="space-y-4">
                   {reviews.map((r) => {
-                    const companyCategory = r.companies?.category || 'installers'
+                    const companyCategory = r.vendors?.category || 'installers'
                     const ratingFields = getRatingFields(companyCategory)
                     const isEditing = editingReview?.id === r.id
 
@@ -667,7 +667,7 @@ export default function AdminPage() {
                           /* ---- Editing mode ---- */
                           <div className="space-y-4">
                             <p className="text-sm font-medium text-[#64748b]">
-                              Review for <span className="text-[#1e293b]">{r.companies?.name || 'Unknown Company'}</span>
+                              Review for <span className="text-[#1e293b]">{r.vendors?.name || 'Unknown Company'}</span>
                             </p>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                               <div>
@@ -752,7 +752,7 @@ export default function AdminPage() {
                             <div className="flex items-start justify-between mb-2">
                               <div>
                                 <h3 className="font-semibold text-[#1e293b]">
-                                  {r.companies?.name || 'Unknown Company'}
+                                  {r.vendors?.name || 'Unknown Company'}
                                 </h3>
                                 <p className="text-[#64748b] text-sm">
                                   by {r.reviewer_name}

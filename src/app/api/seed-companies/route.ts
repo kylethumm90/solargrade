@@ -67,7 +67,7 @@ export async function POST() {
     approved: true,
   }))
 
-  const { data, error } = await supabase.from('companies').insert(rows).select()
+  const { data, error } = await supabase.from('vendors').insert(rows).select()
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 })
