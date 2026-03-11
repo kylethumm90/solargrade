@@ -13,7 +13,7 @@ export const INSTALLER_RATINGS = [
   { key: 'payReliability', label: 'Payment Reliability' },
   { key: 'communication', label: 'Communication' },
   { key: 'installQuality', label: 'Install Quality' },
-  { key: 'warranty', label: 'Warranty Support' },
+  { key: 'warrantySupport', label: 'Warranty Support' },
   { key: 'transparency', label: 'Transparency' },
   { key: 'wouldRecommend', label: 'Would Recommend' },
 ] as const
@@ -38,6 +38,15 @@ export function getCategoryLabel(value: string) {
 export function getCategoryColor(value: string) {
   return CATEGORIES.find((c) => c.value === value)?.color ?? '#94a3b8'
 }
+
+export const INSTALLER_RELATIONSHIPS = [
+  'Subcontractor / Install Crew',
+  'Sales Rep / Dealer',
+  'Homeowner',
+  'Other',
+] as const
+
+export type InstallerRelationship = (typeof INSTALLER_RELATIONSHIPS)[number]
 
 export function getAverageRating(ratings: Record<string, number>): number {
   const values = Object.values(ratings)

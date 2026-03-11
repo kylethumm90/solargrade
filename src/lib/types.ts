@@ -14,6 +14,7 @@ export interface Review {
   vendor_id: string
   reviewer_name: string
   company: string | null
+  relationship: string | null
   ratings: Record<string, number>
   review_text: string
   created_at: string
@@ -39,6 +40,7 @@ export interface PendingReview {
   vendor_id: string
   reviewer_name: string
   company: string | null
+  relationship: string | null
   ratings: Record<string, number>
   review_text: string
   submitted_at: string
