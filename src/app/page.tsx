@@ -1,8 +1,7 @@
 import { supabase } from '@/lib/supabase'
 import { CATEGORIES, getAverageRating } from '@/lib/constants'
-import { CategoryBadge } from '@/components/CategoryBadge'
-import { StarRating } from '@/components/StarRating'
 import { Vendor, Review } from '@/lib/types'
+import { TopRatedSection } from '@/components/TopRatedSection'
 import { Wrench, Megaphone, Users, Phone, DollarSign, Code } from 'lucide-react'
 
 const CATEGORY_ICONS: Record<string, React.ReactNode> = {
@@ -47,7 +46,6 @@ async function getTopVendors() {
   return vendorMap
     .filter((v) => v.review_count > 0)
     .sort((a, b) => b.avg_rating - a.avg_rating)
-    .slice(0, 5)
 }
 
 export default async function HomePage() {
@@ -150,6 +148,7 @@ export default async function HomePage() {
           </div>
         </section>
       )}
+      {topVendors.length > 0 && <TopRatedSection vendors={topVendors} />}
       {/* CTA */}
       <section className="max-w-6xl mx-auto px-4 py-16">
         <div className="border-t border-amber-500/30 pt-16">
