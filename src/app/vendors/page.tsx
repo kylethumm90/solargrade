@@ -87,6 +87,13 @@ export default function VendorsPage() {
         </select>
       </div>
 
+      <p className="text-sm text-[#64748b] mb-6 -mt-4">
+        Don&apos;t see who you&apos;re looking for?{' '}
+        <a href="/submit" className="text-amber-500 hover:text-amber-400 font-medium transition-colors">
+          Add them &rarr;
+        </a>
+      </p>
+
       {loading ? (
         <p className="text-[#64748b]">Loading vendors...</p>
       ) : vendors.length === 0 ? (
@@ -115,6 +122,29 @@ export default function VendorsPage() {
               </div>
             </a>
           ))}
+        </div>
+      )}
+
+      {/* Bottom CTA */}
+      {!loading && (
+        <div
+          className="mt-8 rounded-xl p-8 text-center animate-fade-up-delay"
+          style={{
+            border: '2px dashed rgba(245,158,11,0.35)',
+            background: 'rgba(245,158,11,0.03)',
+          }}
+        >
+          <h3 className="text-xl font-bold text-[#1e293b] mb-2">Missing a company?</h3>
+          <p className="text-[#64748b] text-sm max-w-md mx-auto mb-5">
+            If you&apos;ve worked with an installer, vendor, or tool that isn&apos;t listed yet, add
+            it. Takes 30 seconds.
+          </p>
+          <a
+            href="/submit"
+            className="inline-block px-6 py-3 bg-amber-500 text-white font-semibold rounded-lg hover:bg-amber-400 transition-colors"
+          >
+            Submit a Company
+          </a>
         </div>
       )}
     </div>
