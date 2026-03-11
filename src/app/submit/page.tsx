@@ -39,7 +39,8 @@ export default function SubmitPage() {
     })
 
     if (submitError) {
-      setError('Failed to submit. Please try again.')
+      console.error('Supabase submit error:', submitError)
+      setError(`Failed to submit: ${submitError.message || 'Unknown error'}`)
       setSubmitting(false)
       return
     }

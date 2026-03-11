@@ -3,6 +3,16 @@ import { CATEGORIES, getAverageRating } from '@/lib/constants'
 import { CategoryBadge } from '@/components/CategoryBadge'
 import { StarRating } from '@/components/StarRating'
 import { Vendor, Review } from '@/lib/types'
+import { Wrench, Megaphone, Users, Phone, DollarSign, Code } from 'lucide-react'
+
+const CATEGORY_ICONS: Record<string, React.ReactNode> = {
+  installers: <Wrench size={20} />,
+  leads: <Megaphone size={20} />,
+  crm: <Users size={20} />,
+  callcenter: <Phone size={20} />,
+  financing: <DollarSign size={20} />,
+  software: <Code size={20} />,
+}
 
 export const revalidate = 60
 
@@ -79,9 +89,9 @@ export default async function HomePage() {
             >
               <div
                 className="w-10 h-10 rounded-lg flex items-center justify-center mb-3"
-                style={{ backgroundColor: `${cat.color}20` }}
+                style={{ backgroundColor: `${cat.color}20`, color: cat.color }}
               >
-                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: cat.color }} />
+                {CATEGORY_ICONS[cat.value]}
               </div>
               <h3 className="font-semibold text-[#1e293b] group-hover:text-amber-500 transition-colors">
                 {cat.label}
