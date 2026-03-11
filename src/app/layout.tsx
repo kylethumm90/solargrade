@@ -26,7 +26,7 @@ export default function RootLayout({
         <nav className="border-b border-[#e2e8f0] bg-white">
           <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
             <a href="/" className="flex items-center gap-2">
-              <img src="/logo.svg" alt="SolarGrade" className="h-10" />
+              <img src="/logo.png" alt="SolarGrade" className="h-10" />
               <span className="ml-2 px-2 py-0.5 text-[10px] font-semibold bg-amber-500/20 text-amber-600 rounded-full uppercase tracking-wider">
                 Beta
               </span>
@@ -47,7 +47,7 @@ export default function RootLayout({
         <main className="min-h-screen">{children}</main>
         <footer className="border-t border-[#e2e8f0] bg-[#f8fafc] py-8 mt-16">
           <div className="max-w-6xl mx-auto px-4 text-center">
-            <img src="/logo.svg" alt="SolarGrade" className="h-8 mx-auto mb-3" />
+            <img src="/logo.png" alt="SolarGrade" className="h-8 mx-auto mb-3" />
             <p className="text-[#64748b] text-sm">
               SolarGrade -- Built for solar professionals, by solar professionals
             </p>
