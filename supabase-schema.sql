@@ -57,6 +57,10 @@ alter table pending_reviews enable row level security;
 create policy "Public can read vendors" on vendors for select using (approved = true);
 create policy "Public can read reviews" on reviews for select using (true);
 
+-- Public can submit vendors and reviews directly
+create policy "Anyone can insert vendors" on vendors for insert with check (true);
+create policy "Anyone can insert reviews" on reviews for insert with check (true);
+
 -- Anyone can submit to pending tables
 create policy "Anyone can submit vendors" on pending_vendors for insert with check (true);
 create policy "Anyone can submit reviews" on pending_reviews for insert with check (true);

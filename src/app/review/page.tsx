@@ -68,7 +68,7 @@ export default function ReviewPage() {
     }
 
     setSubmitting(true)
-    const { error: submitError } = await supabase.from('pending_reviews').insert({
+    const { error: submitError } = await supabase.from('reviews').insert({
       vendor_id: selectedVendor,
       reviewer_name: reviewerName,
       company: company || null,
@@ -94,7 +94,7 @@ export default function ReviewPage() {
           <div className="text-4xl mb-4">&#10003;</div>
           <h2 className="text-2xl font-bold text-[#1e293b] mb-2">Review Submitted!</h2>
           <p className="text-[#64748b] mb-6">
-            Your review has been submitted for moderation. It will appear on the site once approved.
+            Your review has been published. Thank you for your feedback!
           </p>
           <a
             href="/vendors"
