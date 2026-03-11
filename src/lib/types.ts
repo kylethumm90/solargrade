@@ -43,7 +43,7 @@ export interface PendingCompany {
 }
 
 export interface ReviewWithCompany extends Review {
-  vendors?: { name: string; category: string }
+  companies?: { name: string; category: string }
 }
 
 export interface PendingReview {
@@ -55,5 +55,5 @@ export interface PendingReview {
   ratings: Record<string, number>
   review_text: string
   submitted_at: string
-  vendors?: { name: string; category: string }
+  companies?: { name: string; category: string }
 }

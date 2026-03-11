@@ -10,7 +10,7 @@ export const revalidate = 60
 
 export default async function CompanyDetailPage({ params }: { params: { slug: string } }) {
   const { data: companyData } = await supabase
-    .from('vendors')
+    .from('companies')
     .select('*')
     .eq('slug', params.slug)
     .eq('approved', true)

@@ -21,7 +21,7 @@ export default function ReviewPage() {
   useEffect(() => {
     async function load() {
       const { data } = await supabase
-        .from('vendors')
+        .from('companies')
         .select('*')
         .eq('approved', true)
         .order('name')
