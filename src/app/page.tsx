@@ -133,6 +133,44 @@ export default async function HomePage() {
           </div>
         </section>
       )}
+      {/* CTA */}
+      <section className="max-w-6xl mx-auto px-4 py-16">
+        <div className="border-t border-amber-500/30 pt-16">
+          <div
+            className="relative rounded-2xl p-10 md:p-14 text-center overflow-hidden animate-fade-up"
+            style={{
+              background: 'linear-gradient(135deg, rgba(245,158,11,0.06) 0%, rgba(245,158,11,0.02) 50%, rgba(245,158,11,0.06) 100%)',
+              border: '1px solid rgba(245,158,11,0.2)',
+              boxShadow: '0 0 60px rgba(245,158,11,0.06)',
+            }}
+          >
+            <span className="inline-block text-xs font-semibold tracking-widest text-amber-500 uppercase mb-4">
+              Know something we don&apos;t?
+            </span>
+            <h2 className="text-2xl md:text-[28px] font-bold text-[#1e293b] mb-3">
+              Don&apos;t see a company you want to review?
+            </h2>
+            <p className="text-[#64748b] max-w-xl mx-auto mb-8 leading-relaxed">
+              SolarGrade only works if the industry contributes. Add the installers, vendors, and
+              tools you actually use so others can rate them too.
+            </p>
+            <div className="flex gap-4 justify-center flex-wrap">
+              <a
+                href="/submit"
+                className="px-6 py-3 bg-amber-500 text-white font-semibold rounded-lg hover:bg-amber-400 transition-colors"
+              >
+                Add a Company
+              </a>
+              <a
+                href="/review"
+                className="px-6 py-3 border border-amber-500 text-amber-600 font-semibold rounded-lg hover:bg-amber-500/10 transition-colors"
+              >
+                Write a Review
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   )
 }
