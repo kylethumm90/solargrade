@@ -3,7 +3,7 @@ import { CATEGORIES, getAverageRating } from '@/lib/constants'
 import { Company, Review } from '@/lib/types'
 import { TopRatedSection } from '@/components/TopRatedSection'
 import { RecentReviewsSection } from '@/components/RecentReviewsSection'
-import { Wrench, Megaphone, Users, Phone, DollarSign, Code } from 'lucide-react'
+import { Wrench, Megaphone, Users, Phone, DollarSign, Code, Briefcase } from 'lucide-react'
 
 const CATEGORY_ICONS: Record<string, React.ReactNode> = {
   installers: <Wrench size={20} />,
@@ -12,6 +12,7 @@ const CATEGORY_ICONS: Record<string, React.ReactNode> = {
   callcenter: <Phone size={20} />,
   financing: <DollarSign size={20} />,
   software: <Code size={20} />,
+  salesorgs: <Briefcase size={20} />,
 }
 
 export const revalidate = 60
