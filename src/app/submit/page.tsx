@@ -161,7 +161,12 @@ export default function SubmitPage() {
           <label className="block text-sm font-medium text-[#1e293b] mb-2">Category *</label>
           <select
             value={category}
-            onChange={(e) => setCategory(e.target.value)}
+            onChange={(e) => {
+              setCategory(e.target.value)
+              if (e.target.value !== 'installers' && e.target.value !== 'salesorgs') {
+                setSelectedStates([])
+              }
+            }}
             className="w-full bg-white border border-[#e2e8f0] text-[#1e293b] rounded-lg px-4 py-3"
             required
           >
@@ -195,7 +200,7 @@ export default function SubmitPage() {
           />
         </div>
 
-        <div>
+        {(category === 'installers' || category === 'salesorgs') && <div>
           <label className="block text-sm font-medium text-[#1e293b] mb-2">States Served</label>
           <p className="text-xs text-[#64748b] mb-2">Select all states this company operates in.</p>
           <div className="bg-white border border-[#e2e8f0] rounded-lg p-3 max-h-[200px] overflow-y-auto">
@@ -223,7 +228,7 @@ export default function SubmitPage() {
           {selectedStates.length > 0 && (
             <p className="text-xs text-[#64748b] mt-2">{selectedStates.length} state{selectedStates.length !== 1 ? 's' : ''} selected</p>
           )}
-        </div>
+        </div>}
 
         {error && <p className="text-red-600 text-sm">{error}</p>}
 
