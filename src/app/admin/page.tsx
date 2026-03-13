@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
-import { getCategoryLabel, getCategoryColor, getRatingFields, CATEGORIES } from '@/lib/constants'
+import { getCategoryLabel, getCategoryColor, getRatingFields, CATEGORIES, US_STATES } from '@/lib/constants'
 import { StarRating } from '@/components/StarRating'
 import { PendingCompany, PendingReview, Company, ReviewWithCompany } from '@/lib/types'
 
@@ -26,7 +26,9 @@ export default function AdminPage() {
 
   // Listings state
   const [companies, setCompanies] = useState<Company[]>([])
+  const [companyStatesMap, setCompanyStatesMap] = useState<Record<string, string[]>>({})
   const [editingCompany, setEditingCompany] = useState<Company | null>(null)
+  const [editingStates, setEditingStates] = useState<string[]>([])
 
   // Reviews state
   const [reviews, setReviews] = useState<ReviewWithCompany[]>([])
@@ -74,6 +76,14 @@ export default function AdminPage() {
       .select('*')
       .order('name', { ascending: true })
     setCompanies(data || [])
+
+    const { data: statesData } = await supabase.from('company_states').select('*')
+    const sMap: Record<string, string[]> = {}
+    for (const row of statesData || []) {
+      if (!sMap[row.company_id]) sMap[row.company_id] = []
+      sMap[row.company_id].push(row.state)
+    }
+    setCompanyStatesMap(sMap)
   }
 
   async function loadReviews() {
@@ -186,7 +196,16 @@ export default function AdminPage() {
       .eq('id', editingCompany.id)
 
     if (!error) {
+      // Update states: delete existing, insert new
+      await supabase.from('company_states').delete().eq('company_id', editingCompany.id)
+      if (editingStates.length > 0) {
+        await supabase.from('company_states').insert(
+          editingStates.map((s: string) => ({ company_id: editingCompany.id, state: s }))
+        )
+      }
+
       setEditingCompany(null)
+      setEditingStates([])
       loadCompanies()
     }
   }
@@ -491,6 +510,32 @@ export default function AdminPage() {
                               ))}
                             </div>
                           </div>
+                          <div className="border-t border-[#e2e8f0] pt-4">
+                            <label className="block text-sm font-medium text-[#1e293b] mb-2">
+                              States Served ({editingStates.length} selected)
+                            </label>
+                            <div className="bg-white border border-[#e2e8f0] rounded-lg p-3 max-h-[200px] overflow-y-auto">
+                              <div className="grid grid-cols-2 md:grid-cols-4 gap-1">
+                                {US_STATES.map((st) => (
+                                  <label key={st.value} className="flex items-center gap-1.5 py-0.5 px-1 rounded hover:bg-[#f8fafc] cursor-pointer text-xs">
+                                    <input
+                                      type="checkbox"
+                                      checked={editingStates.includes(st.value)}
+                                      onChange={(e) => {
+                                        if (e.target.checked) {
+                                          setEditingStates([...editingStates, st.value])
+                                        } else {
+                                          setEditingStates(editingStates.filter((s) => s !== st.value))
+                                        }
+                                      }}
+                                      className="accent-amber-500"
+                                    />
+                                    <span className="text-[#1e293b]">{st.value}</span>
+                                  </label>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
                           <div className="flex gap-3">
                             <button
                               onClick={saveCompany}
@@ -499,7 +544,7 @@ export default function AdminPage() {
                               Save
                             </button>
                             <button
-                              onClick={() => setEditingCompany(null)}
+                              onClick={() => { setEditingCompany(null); setEditingStates([]) }}
                               className="px-4 py-2 bg-[#e2e8f0] text-[#1e293b] text-sm rounded-lg hover:bg-[#cbd5e1] transition-colors"
                             >
                               Cancel
@@ -525,11 +570,26 @@ export default function AdminPage() {
                           </div>
                           {v.website && <p className="text-amber-600 text-sm mb-1">{v.website}</p>}
                           {v.description && (
-                            <p className="text-[#64748b] text-sm mb-4 line-clamp-2">{v.description}</p>
+                            <p className="text-[#64748b] text-sm mb-2 line-clamp-2">{v.description}</p>
+                          )}
+                          {(companyStatesMap[v.id] || []).length > 0 && (
+                            <div className="flex flex-wrap gap-1 mb-3">
+                              {(companyStatesMap[v.id] || []).sort().slice(0, 8).map((st) => (
+                                <span key={st} className="inline-block text-xs font-medium bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded-full">
+                                  {st}
+                                </span>
+                              ))}
+                              {(companyStatesMap[v.id] || []).length > 8 && (
+                                <span className="text-xs text-[#64748b]">+{(companyStatesMap[v.id] || []).length - 8} more</span>
+                              )}
+                            </div>
                           )}
                           <div className="flex gap-3">
                             <button
-                              onClick={() => setEditingCompany({ ...v })}
+                              onClick={() => {
+                                setEditingCompany({ ...v })
+                                setEditingStates(companyStatesMap[v.id] || [])
+                              }}
                               className="px-4 py-2 bg-amber-500 text-white text-sm rounded-lg hover:bg-amber-400 transition-colors"
                             >
                               Edit

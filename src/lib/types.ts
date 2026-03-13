@@ -31,6 +31,7 @@ export interface CompanyWithReviews extends Company {
   reviews: Review[]
   avg_rating: number
   review_count: number
+  states_served?: string[]
 }
 
 export interface PendingCompany {

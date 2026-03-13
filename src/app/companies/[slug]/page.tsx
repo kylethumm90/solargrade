@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase'
-import { getRatingFields, getAverageRating } from '@/lib/constants'
+import { getRatingFields, getAverageRating, getStateLabel } from '@/lib/constants'
 import { CategoryBadge } from '@/components/CategoryBadge'
 import { StarRating } from '@/components/StarRating'
 import { SocialLinks } from '@/components/SocialLinks'
@@ -23,6 +23,13 @@ export default async function CompanyDetailPage({ params }: { params: { slug: st
     .select('*')
     .eq('company_id', companyData.id)
     .order('created_at', { ascending: false })
+
+  const { data: statesData } = await supabase
+    .from('company_states')
+    .select('state')
+    .eq('company_id', companyData.id)
+
+  const statesServed = (statesData || []).map((s: { state: string }) => s.state).sort()
 
   const typedCompany = companyData as Company
   const typedReviews = (reviews || []) as Review[]
@@ -74,6 +81,18 @@ export default async function CompanyDetailPage({ params }: { params: { slug: st
             website_url={typedCompany.website_url}
           />
         </div>
+        {statesServed.length > 0 && (
+          <div className="mt-4">
+            <p className="text-sm font-medium text-[#1e293b] mb-2">States Served</p>
+            <div className="flex flex-wrap gap-1.5">
+              {statesServed.map((st: string) => (
+                <span key={st} className="inline-block text-xs font-medium bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full">
+                  {st} - {getStateLabel(st)}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Overall Rating */}

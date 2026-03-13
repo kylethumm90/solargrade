@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
-import { CATEGORIES, getAverageRating } from '@/lib/constants'
+import { CATEGORIES, US_STATES, getAverageRating } from '@/lib/constants'
 import { CategoryBadge } from '@/components/CategoryBadge'
 import { StarRating } from '@/components/StarRating'
 import { Company, Review } from '@/lib/types'
@@ -10,11 +10,13 @@ import { Company, Review } from '@/lib/types'
 interface CompanyWithStats extends Company {
   avg_rating: number
   review_count: number
+  states_served: string[]
 }
 
 export default function CompaniesPage() {
   const [companies, setCompanies] = useState<CompanyWithStats[]>([])
   const [category, setCategory] = useState('')
+  const [stateFilter, setStateFilter] = useState('')
   const [sort, setSort] = useState('rating')
   const [search, setSearch] = useState('')
   const [loading, setLoading] = useState(true)
@@ -23,6 +25,8 @@ export default function CompaniesPage() {
     const params = new URLSearchParams(window.location.search)
     const cat = params.get('category')
     if (cat) setCategory(cat)
+    const st = params.get('state')
+    if (st) setStateFilter(st)
   }, [])
 
   useEffect(() => {
@@ -32,20 +36,33 @@ export default function CompaniesPage() {
       if (category) query = query.eq('category', category)
       const { data: companyData } = await query
       const { data: reviewData } = await supabase.from('reviews').select('*')
+      const { data: statesData } = await supabase.from('company_states').select('*')
 
       if (!companyData) {
         setLoading(false)
         return
       }
 
-      const mapped = companyData.map((v: Company) => {
+      // Build a map of company_id -> states served
+      const statesMap: Record<string, string[]> = {}
+      for (const row of statesData || []) {
+        if (!statesMap[row.company_id]) statesMap[row.company_id] = []
+        statesMap[row.company_id].push(row.state)
+      }
+
+      let mapped = companyData.map((v: Company) => {
         const vReviews = (reviewData || []).filter((r: Review) => r.company_id === v.id)
         const avgRatings = vReviews.map((r: Review) => getAverageRating(r.ratings))
         const avg = avgRatings.length > 0
           ? avgRatings.reduce((a: number, b: number) => a + b, 0) / avgRatings.length
           : 0
-        return { ...v, avg_rating: avg, review_count: vReviews.length }
+        return { ...v, avg_rating: avg, review_count: vReviews.length, states_served: statesMap[v.id] || [] }
       })
+
+      // Filter by state
+      if (stateFilter) {
+        mapped = mapped.filter((v) => v.states_served.includes(stateFilter))
+      }
 
       mapped.sort((a, b) => {
         if (sort === 'rating') return b.avg_rating - a.avg_rating
@@ -57,7 +74,7 @@ export default function CompaniesPage() {
       setLoading(false)
     }
     load()
-  }, [category, sort])
+  }, [category, stateFilter, sort])
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-12">
@@ -81,6 +98,19 @@ export default function CompaniesPage() {
           {CATEGORIES.map((cat) => (
             <option key={cat.value} value={cat.value}>
               {cat.label}
+            </option>
+          ))}
+        </select>
+
+        <select
+          value={stateFilter}
+          onChange={(e) => setStateFilter(e.target.value)}
+          className="bg-white border border-[#e2e8f0] text-[#1e293b] rounded-lg px-4 py-2 text-sm"
+        >
+          <option value="">All States</option>
+          {US_STATES.map((st) => (
+            <option key={st.value} value={st.value}>
+              {st.label}
             </option>
           ))}
         </select>
@@ -131,6 +161,20 @@ export default function CompaniesPage() {
                   {company.review_count === 1 ? 'review' : 'reviews'})
                 </span>
               </div>
+              {company.states_served.length > 0 && (
+                <div className="flex flex-wrap gap-1 mt-2">
+                  {company.states_served.slice(0, 5).map((st) => (
+                    <span key={st} className="inline-block text-xs font-medium bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">
+                      {st}
+                    </span>
+                  ))}
+                  {company.states_served.length > 5 && (
+                    <span className="inline-block text-xs text-[#64748b] px-1 py-0.5">
+                      +{company.states_served.length - 5} more
+                    </span>
+                  )}
+                </div>
+              )}
             </a>
           ))}
         </div>

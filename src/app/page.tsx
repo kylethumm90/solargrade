@@ -23,8 +23,16 @@ async function getTopCompanies() {
     .eq('approved', true)
 
   const { data: reviews } = await supabase.from('reviews').select('*')
+  const { data: statesData } = await supabase.from('company_states').select('*')
 
   if (!companies || !reviews) return []
+
+  // Build a map of company_id -> states served
+  const statesMap: Record<string, string[]> = {}
+  for (const row of statesData || []) {
+    if (!statesMap[row.company_id]) statesMap[row.company_id] = []
+    statesMap[row.company_id].push(row.state)
+  }
 
   const companyMap = companies.map((company: Company) => {
     const companyReviews = reviews.filter((r: Review) => r.company_id === company.id)
@@ -33,7 +41,7 @@ async function getTopCompanies() {
       avgRatings.length > 0
         ? avgRatings.reduce((a: number, b: number) => a + b, 0) / avgRatings.length
         : 0
-    return { ...company, avg_rating: avgRating, review_count: companyReviews.length }
+    return { ...company, avg_rating: avgRating, review_count: companyReviews.length, states_served: statesMap[company.id] || [] }
   })
 
   return companyMap

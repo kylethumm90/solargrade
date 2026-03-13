@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { CATEGORIES } from '@/lib/constants'
+import { CATEGORIES, US_STATES } from '@/lib/constants'
 import { CategoryBadge } from '@/components/CategoryBadge'
 import { StarRating } from '@/components/StarRating'
 
@@ -12,6 +12,7 @@ type RatedCompany = {
   category: string
   avg_rating: number
   review_count: number
+  states_served?: string[]
 }
 
 const FILTERS = [
@@ -21,15 +22,35 @@ const FILTERS = [
 
 export function TopRatedSection({ companies }: { companies: RatedCompany[] }) {
   const [activeFilter, setActiveFilter] = useState('all')
+  const [stateFilter, setStateFilter] = useState('')
 
-  const filtered =
-    activeFilter === 'all'
-      ? companies.slice(0, 5)
-      : companies.filter((v) => v.category === activeFilter).slice(0, 5)
+  let filtered = activeFilter === 'all'
+    ? companies
+    : companies.filter((v) => v.category === activeFilter)
+
+  if (stateFilter) {
+    filtered = filtered.filter((v) => v.states_served?.includes(stateFilter))
+  }
+
+  filtered = filtered.slice(0, 5)
 
   return (
     <section className="max-w-6xl mx-auto px-4 py-12">
-      <h2 className="text-2xl font-bold text-[#1e293b] mb-6">Top Rated</h2>
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-2xl font-bold text-[#1e293b]">Top Rated</h2>
+        <select
+          value={stateFilter}
+          onChange={(e) => setStateFilter(e.target.value)}
+          className="bg-white border border-[#e2e8f0] text-[#1e293b] rounded-lg px-3 py-1.5 text-sm"
+        >
+          <option value="">All States</option>
+          {US_STATES.map((st) => (
+            <option key={st.value} value={st.value}>
+              {st.label}
+            </option>
+          ))}
+        </select>
+      </div>
 
       {/* Filter Pills */}
       <div className="flex gap-2 mb-6 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">

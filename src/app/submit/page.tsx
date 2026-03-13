@@ -2,13 +2,14 @@
 
 import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
-import { CATEGORIES } from '@/lib/constants'
+import { CATEGORIES, US_STATES } from '@/lib/constants'
 
 export default function SubmitPage() {
   const [name, setName] = useState('')
   const [category, setCategory] = useState('')
   const [website, setWebsite] = useState('')
   const [description, setDescription] = useState('')
+  const [selectedStates, setSelectedStates] = useState<string[]>([])
   const [submitting, setSubmitting] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState('')
@@ -29,20 +30,29 @@ export default function SubmitPage() {
       .replace(/\s+/g, '-')
       .replace(/-+/g, '-')
 
-    const { error: submitError } = await supabase.from('companies').insert({
+    const { data: insertedCompany, error: submitError } = await supabase.from('companies').insert({
       slug,
       name,
       category,
       website: website || null,
       description: description || null,
       approved: true,
-    })
+    }).select('id').single()
 
-    if (submitError) {
+    if (submitError || !insertedCompany) {
       console.error('Supabase submit error:', submitError)
-      setError(`Failed to submit: ${submitError.message || 'Unknown error'}`)
+      setError(`Failed to submit: ${submitError?.message || 'Unknown error'}`)
       setSubmitting(false)
       return
+    }
+
+    // Insert states served
+    if (selectedStates.length > 0) {
+      const stateRows = selectedStates.map((state) => ({
+        company_id: insertedCompany.id,
+        state,
+      }))
+      await supabase.from('company_states').insert(stateRows)
     }
 
     setSuccess(true)
@@ -121,6 +131,36 @@ export default function SubmitPage() {
             className="w-full bg-white border border-[#e2e8f0] text-[#1e293b] rounded-lg px-4 py-3 min-h-[100px]"
             placeholder="Brief description of the company..."
           />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-[#1e293b] mb-2">States Served</label>
+          <p className="text-xs text-[#64748b] mb-2">Select all states this company operates in.</p>
+          <div className="bg-white border border-[#e2e8f0] rounded-lg p-3 max-h-[200px] overflow-y-auto">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-1">
+              {US_STATES.map((st) => (
+                <label key={st.value} className="flex items-center gap-2 py-1 px-2 rounded hover:bg-[#f8fafc] cursor-pointer text-sm">
+                  <input
+                    type="checkbox"
+                    checked={selectedStates.includes(st.value)}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setSelectedStates([...selectedStates, st.value])
+                      } else {
+                        setSelectedStates(selectedStates.filter((s) => s !== st.value))
+                      }
+                    }}
+                    className="accent-amber-500"
+                  />
+                  <span className="text-[#1e293b]">{st.value}</span>
+                  <span className="text-[#64748b] text-xs hidden md:inline">- {st.label}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+          {selectedStates.length > 0 && (
+            <p className="text-xs text-[#64748b] mt-2">{selectedStates.length} state{selectedStates.length !== 1 ? 's' : ''} selected</p>
+          )}
         </div>
 
         {error && <p className="text-red-600 text-sm">{error}</p>}
