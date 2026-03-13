@@ -148,7 +148,16 @@ export default function CompaniesPage() {
               className="p-6 rounded-xl bg-[#f8fafc] border border-[#e2e8f0] hover:border-amber-500/30 transition-all duration-200"
             >
               <div className="flex items-start justify-between mb-2">
-                <h3 className="font-semibold text-[#1e293b] text-lg">{company.name}</h3>
+                <div className="flex items-center gap-3">
+                  {company.logo_url && (
+                    <img
+                      src={company.logo_url}
+                      alt={`${company.name} logo`}
+                      className="w-10 h-10 rounded-lg object-contain border border-[#e2e8f0] bg-white shrink-0"
+                    />
+                  )}
+                  <h3 className="font-semibold text-[#1e293b] text-lg">{company.name}</h3>
+                </div>
                 <CategoryBadge category={company.category} />
               </div>
               {company.description && (
