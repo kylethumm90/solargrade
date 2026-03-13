@@ -35,6 +35,9 @@ export default function RootLayout({
               <a href="/companies" className="text-[#64748b] hover:text-[#1e293b] transition-colors">
                 Browse Companies
               </a>
+              <a href="/how-it-works" className="text-[#64748b] hover:text-[#1e293b] transition-colors">
+                How It Works
+              </a>
               <a href="/review" className="text-[#64748b] hover:text-[#1e293b] transition-colors">
                 Write a Review
               </a>
@@ -51,6 +54,13 @@ export default function RootLayout({
             <p className="text-[#64748b] text-sm">
               SolarGrade -- Built for solar professionals, by solar professionals
             </p>
+            <div className="flex items-center justify-center gap-4 text-xs text-[#64748b]/60 mt-3">
+              <a href="/how-it-works" className="hover:text-[#64748b] transition-colors">How It Works</a>
+              <span>&middot;</span>
+              <a href="/terms" className="hover:text-[#64748b] transition-colors">Terms of Service</a>
+              <span>&middot;</span>
+              <a href="/content-policy" className="hover:text-[#64748b] transition-colors">Content Policy</a>
+            </div>
             <p className="text-[#64748b]/60 text-xs mt-2">A Solar Growth Project initiative</p>
           </div>
         </footer>
