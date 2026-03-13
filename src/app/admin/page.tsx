@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
-import { getCategoryLabel, getCategoryColor, getRatingFields, CATEGORIES } from '@/lib/constants'
+import { getCategoryLabel, getCategoryColor, getRatingFields, CATEGORIES, US_STATES } from '@/lib/constants'
 import { StarRating } from '@/components/StarRating'
 import { PendingCompany, PendingReview, Company, ReviewWithCompany } from '@/lib/types'
 
@@ -26,7 +26,11 @@ export default function AdminPage() {
 
   // Listings state
   const [companies, setCompanies] = useState<Company[]>([])
+  const [companyStatesMap, setCompanyStatesMap] = useState<Record<string, string[]>>({})
   const [editingCompany, setEditingCompany] = useState<Company | null>(null)
+  const [editingStates, setEditingStates] = useState<string[]>([])
+  const [editingLogoFile, setEditingLogoFile] = useState<File | null>(null)
+  const [editingLogoPreview, setEditingLogoPreview] = useState<string | null>(null)
 
   // Reviews state
   const [reviews, setReviews] = useState<ReviewWithCompany[]>([])
@@ -74,6 +78,14 @@ export default function AdminPage() {
       .select('*')
       .order('name', { ascending: true })
     setCompanies(data || [])
+
+    const { data: statesData } = await supabase.from('company_states').select('*')
+    const sMap: Record<string, string[]> = {}
+    for (const row of statesData || []) {
+      if (!sMap[row.company_id]) sMap[row.company_id] = []
+      sMap[row.company_id].push(row.state)
+    }
+    setCompanyStatesMap(sMap)
   }
 
   async function loadReviews() {
@@ -168,6 +180,20 @@ export default function AdminPage() {
       }
     }
 
+    // Upload new logo if provided
+    let logoUrl = editingCompany.logo_url
+    if (editingLogoFile) {
+      const fileExt = editingLogoFile.name.split('.').pop()?.toLowerCase() || 'png'
+      const filePath = `${editingCompany.slug}.${fileExt}`
+      const { error: uploadError } = await supabase.storage
+        .from('logos')
+        .upload(filePath, editingLogoFile, { upsert: true })
+      if (!uploadError) {
+        const { data: publicUrlData } = supabase.storage.from('logos').getPublicUrl(filePath)
+        logoUrl = publicUrlData.publicUrl
+      }
+    }
+
     const { error } = await supabase
       .from('companies')
       .update({
@@ -175,6 +201,7 @@ export default function AdminPage() {
         category: editingCompany.category,
         website: editingCompany.website,
         description: editingCompany.description,
+        logo_url: logoUrl,
         facebook_url: editingCompany.facebook_url,
         instagram_url: editingCompany.instagram_url,
         linkedin_url: editingCompany.linkedin_url,
@@ -186,7 +213,18 @@ export default function AdminPage() {
       .eq('id', editingCompany.id)
 
     if (!error) {
+      // Update states: delete existing, insert new
+      await supabase.from('company_states').delete().eq('company_id', editingCompany.id)
+      if (editingStates.length > 0) {
+        await supabase.from('company_states').insert(
+          editingStates.map((s: string) => ({ company_id: editingCompany.id, state: s }))
+        )
+      }
+
       setEditingCompany(null)
+      setEditingStates([])
+      setEditingLogoFile(null)
+      setEditingLogoPreview(null)
       loadCompanies()
     }
   }
@@ -467,6 +505,47 @@ export default function AdminPage() {
                             />
                           </div>
                           <div className="border-t border-[#e2e8f0] pt-4">
+                            <label className="block text-sm font-medium text-[#1e293b] mb-2">Logo</label>
+                            <div className="flex items-center gap-4">
+                              {(editingLogoPreview || editingCompany.logo_url) && (
+                                <div className="relative">
+                                  <img
+                                    src={editingLogoPreview || editingCompany.logo_url || ''}
+                                    alt="Logo"
+                                    className="w-12 h-12 rounded-lg object-contain border border-[#e2e8f0] bg-white"
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setEditingLogoFile(null)
+                                      setEditingLogoPreview(null)
+                                      setEditingCompany({ ...editingCompany, logo_url: null })
+                                    }}
+                                    className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center hover:bg-red-400"
+                                  >
+                                    &times;
+                                  </button>
+                                </div>
+                              )}
+                              <input
+                                type="file"
+                                accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0]
+                                  if (file) {
+                                    if (file.size > 2 * 1024 * 1024) {
+                                      alert('Logo must be under 2MB.')
+                                      return
+                                    }
+                                    setEditingLogoFile(file)
+                                    setEditingLogoPreview(URL.createObjectURL(file))
+                                  }
+                                }}
+                                className="text-xs text-[#64748b] file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100 file:cursor-pointer"
+                              />
+                            </div>
+                          </div>
+                          <div className="border-t border-[#e2e8f0] pt-4">
                             <label className="block text-sm font-medium text-[#1e293b] mb-3">Social Links</label>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                               {([
@@ -491,6 +570,32 @@ export default function AdminPage() {
                               ))}
                             </div>
                           </div>
+                          <div className="border-t border-[#e2e8f0] pt-4">
+                            <label className="block text-sm font-medium text-[#1e293b] mb-2">
+                              States Served ({editingStates.length} selected)
+                            </label>
+                            <div className="bg-white border border-[#e2e8f0] rounded-lg p-3 max-h-[200px] overflow-y-auto">
+                              <div className="grid grid-cols-2 md:grid-cols-4 gap-1">
+                                {US_STATES.map((st) => (
+                                  <label key={st.value} className="flex items-center gap-1.5 py-0.5 px-1 rounded hover:bg-[#f8fafc] cursor-pointer text-xs">
+                                    <input
+                                      type="checkbox"
+                                      checked={editingStates.includes(st.value)}
+                                      onChange={(e) => {
+                                        if (e.target.checked) {
+                                          setEditingStates([...editingStates, st.value])
+                                        } else {
+                                          setEditingStates(editingStates.filter((s) => s !== st.value))
+                                        }
+                                      }}
+                                      className="accent-amber-500"
+                                    />
+                                    <span className="text-[#1e293b]">{st.value}</span>
+                                  </label>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
                           <div className="flex gap-3">
                             <button
                               onClick={saveCompany}
@@ -499,7 +604,7 @@ export default function AdminPage() {
                               Save
                             </button>
                             <button
-                              onClick={() => setEditingCompany(null)}
+                              onClick={() => { setEditingCompany(null); setEditingStates([]); setEditingLogoFile(null); setEditingLogoPreview(null) }}
                               className="px-4 py-2 bg-[#e2e8f0] text-[#1e293b] text-sm rounded-lg hover:bg-[#cbd5e1] transition-colors"
                             >
                               Cancel
@@ -510,14 +615,23 @@ export default function AdminPage() {
                         /* ---- Display mode ---- */
                         <>
                           <div className="flex items-start justify-between mb-2">
-                            <div>
-                              <h3 className="font-semibold text-[#1e293b] text-lg">{v.name}</h3>
-                              <span
-                                className="inline-block text-xs font-medium text-white px-2 py-0.5 rounded-full mt-1"
-                                style={{ backgroundColor: getCategoryColor(v.category) }}
-                              >
-                                {getCategoryLabel(v.category)}
-                              </span>
+                            <div className="flex items-center gap-3">
+                              {v.logo_url && (
+                                <img
+                                  src={v.logo_url}
+                                  alt={`${v.name} logo`}
+                                  className="w-10 h-10 rounded-lg object-contain border border-[#e2e8f0] bg-white shrink-0"
+                                />
+                              )}
+                              <div>
+                                <h3 className="font-semibold text-[#1e293b] text-lg">{v.name}</h3>
+                                <span
+                                  className="inline-block text-xs font-medium text-white px-2 py-0.5 rounded-full mt-1"
+                                  style={{ backgroundColor: getCategoryColor(v.category) }}
+                                >
+                                  {getCategoryLabel(v.category)}
+                                </span>
+                              </div>
                             </div>
                             <span className="text-xs text-[#64748b]">
                               {new Date(v.created_at).toLocaleDateString()}
@@ -525,11 +639,28 @@ export default function AdminPage() {
                           </div>
                           {v.website && <p className="text-amber-600 text-sm mb-1">{v.website}</p>}
                           {v.description && (
-                            <p className="text-[#64748b] text-sm mb-4 line-clamp-2">{v.description}</p>
+                            <p className="text-[#64748b] text-sm mb-2 line-clamp-2">{v.description}</p>
+                          )}
+                          {(companyStatesMap[v.id] || []).length > 0 && (
+                            <div className="flex flex-wrap gap-1 mb-3">
+                              {(companyStatesMap[v.id] || []).sort().slice(0, 8).map((st) => (
+                                <span key={st} className="inline-block text-xs font-medium bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded-full">
+                                  {st}
+                                </span>
+                              ))}
+                              {(companyStatesMap[v.id] || []).length > 8 && (
+                                <span className="text-xs text-[#64748b]">+{(companyStatesMap[v.id] || []).length - 8} more</span>
+                              )}
+                            </div>
                           )}
                           <div className="flex gap-3">
                             <button
-                              onClick={() => setEditingCompany({ ...v })}
+                              onClick={() => {
+                                setEditingCompany({ ...v })
+                                setEditingStates(companyStatesMap[v.id] || [])
+                                setEditingLogoFile(null)
+                                setEditingLogoPreview(null)
+                              }}
                               className="px-4 py-2 bg-amber-500 text-white text-sm rounded-lg hover:bg-amber-400 transition-colors"
                             >
                               Edit

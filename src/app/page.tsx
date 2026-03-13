@@ -3,7 +3,7 @@ import { CATEGORIES, getAverageRating } from '@/lib/constants'
 import { Company, Review } from '@/lib/types'
 import { TopRatedSection } from '@/components/TopRatedSection'
 import { RecentReviewsSection } from '@/components/RecentReviewsSection'
-import { Wrench, Megaphone, Users, Phone, DollarSign, Code } from 'lucide-react'
+import { Wrench, Megaphone, Users, Phone, DollarSign, Code, Briefcase } from 'lucide-react'
 
 const CATEGORY_ICONS: Record<string, React.ReactNode> = {
   installers: <Wrench size={20} />,
@@ -12,6 +12,7 @@ const CATEGORY_ICONS: Record<string, React.ReactNode> = {
   callcenter: <Phone size={20} />,
   financing: <DollarSign size={20} />,
   software: <Code size={20} />,
+  salesorgs: <Briefcase size={20} />,
 }
 
 export const revalidate = 60
@@ -23,8 +24,16 @@ async function getTopCompanies() {
     .eq('approved', true)
 
   const { data: reviews } = await supabase.from('reviews').select('*')
+  const { data: statesData } = await supabase.from('company_states').select('*')
 
   if (!companies || !reviews) return []
+
+  // Build a map of company_id -> states served
+  const statesMap: Record<string, string[]> = {}
+  for (const row of statesData || []) {
+    if (!statesMap[row.company_id]) statesMap[row.company_id] = []
+    statesMap[row.company_id].push(row.state)
+  }
 
   const companyMap = companies.map((company: Company) => {
     const companyReviews = reviews.filter((r: Review) => r.company_id === company.id)
@@ -33,7 +42,7 @@ async function getTopCompanies() {
       avgRatings.length > 0
         ? avgRatings.reduce((a: number, b: number) => a + b, 0) / avgRatings.length
         : 0
-    return { ...company, avg_rating: avgRating, review_count: companyReviews.length }
+    return { ...company, avg_rating: avgRating, review_count: companyReviews.length, states_served: statesMap[company.id] || [] }
   })
 
   return companyMap
