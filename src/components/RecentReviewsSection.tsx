@@ -12,6 +12,7 @@ type RecentReview = {
   created_at: string
   company_name: string
   company_slug: string
+  company_logo_url?: string | null
   avg_rating: number
 }
 
@@ -115,9 +116,22 @@ export function RecentReviewsSection({ reviews }: { reviews: RecentReview[] }) {
               className="shrink-0 w-[300px] p-4 rounded-xl bg-[#f8fafc] border border-[#e2e8f0] hover:border-amber-500/30 hover:shadow-md hover:-translate-y-1 transition-all duration-200 cursor-pointer block"
             >
               <div className="flex items-center justify-between mb-2">
-                <span className="font-bold text-[#1e293b] text-sm truncate mr-2">
-                  {review.company_name}
-                </span>
+                <div className="flex items-center gap-2 min-w-0 mr-2">
+                  {review.company_logo_url ? (
+                    <img
+                      src={review.company_logo_url}
+                      alt={`${review.company_name} logo`}
+                      className="w-6 h-6 rounded object-contain bg-white border border-[#e2e8f0] shrink-0"
+                    />
+                  ) : (
+                    <div className="w-6 h-6 rounded bg-[#e2e8f0] flex items-center justify-center text-[#64748b] font-bold text-[10px] shrink-0">
+                      {review.company_name.charAt(0)}
+                    </div>
+                  )}
+                  <span className="font-bold text-[#1e293b] text-sm truncate">
+                    {review.company_name}
+                  </span>
+                </div>
                 {showRecommend && (
                   <span className="shrink-0">
                     {wouldRecommend >= 4 ? (

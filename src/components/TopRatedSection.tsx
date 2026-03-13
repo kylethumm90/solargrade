@@ -13,6 +13,7 @@ type RatedCompany = {
   avg_rating: number
   review_count: number
   states_served?: string[]
+  logo_url?: string | null
 }
 
 const FILTERS = [
@@ -86,6 +87,17 @@ export function TopRatedSection({ companies }: { companies: RatedCompany[] }) {
               <span className="text-2xl font-bold text-[#64748b] w-8 text-center">
                 {i + 1}
               </span>
+              {company.logo_url ? (
+                <img
+                  src={company.logo_url}
+                  alt={`${company.name} logo`}
+                  className="w-10 h-10 rounded-lg object-contain bg-white border border-[#e2e8f0]"
+                />
+              ) : (
+                <div className="w-10 h-10 rounded-lg bg-[#e2e8f0] flex items-center justify-center text-[#64748b] font-bold text-sm">
+                  {company.name.charAt(0)}
+                </div>
+              )}
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="font-semibold text-[#1e293b]">{company.name}</span>
