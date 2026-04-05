@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import { AuthProvider } from '@/components/AuthProvider'
+import { NavAuth } from '@/components/NavAuth'
 
 export const metadata: Metadata = {
   title: 'SolarGrade - Solar Industry Review Platform',
@@ -23,6 +25,7 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased" style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}>
+        <AuthProvider>
         <nav className="border-b border-[#e2e8f0] bg-white">
           <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
             <a href="/" className="flex items-center gap-2">
@@ -44,6 +47,7 @@ export default function RootLayout({
               <a href="/submit" className="text-[#64748b] hover:text-[#1e293b] transition-colors">
                 Submit Company
               </a>
+              <NavAuth />
             </div>
           </div>
         </nav>
@@ -64,6 +68,7 @@ export default function RootLayout({
             <p className="text-[#64748b]/60 text-xs mt-2">A Solar Growth Project initiative</p>
           </div>
         </footer>
+        </AuthProvider>
       </body>
     </html>
   )

@@ -5,8 +5,10 @@ import { supabase } from '@/lib/supabase'
 import { CATEGORIES, getRatingFields, INSTALLER_RELATIONSHIPS } from '@/lib/constants'
 import { StarInput } from '@/components/StarRating'
 import { Company } from '@/lib/types'
+import { useAuth } from '@/components/AuthProvider'
 
 export default function ReviewPage() {
+  const { user, loading: authLoading } = useAuth()
   const [companies, setCompanies] = useState<Company[]>([])
   const [selectedCompany, setSelectedCompany] = useState('')
   const [reviewerName, setReviewerName] = useState('')
@@ -113,6 +115,33 @@ export default function ReviewPage() {
     ...cat,
     companies: companies.filter((v) => v.category === cat.value),
   })).filter((g) => g.companies.length > 0)
+
+  if (authLoading) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-20 text-center">
+        <p className="text-[#64748b]">Loading...</p>
+      </div>
+    )
+  }
+
+  if (!user) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-20 text-center">
+        <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-8">
+          <h2 className="text-2xl font-bold text-[#1e293b] mb-2">Sign in to write a review</h2>
+          <p className="text-[#64748b] mb-6">
+            You need to be logged in to submit a review. This helps us verify that reviews come from real professionals.
+          </p>
+          <a
+            href="/login"
+            className="inline-block px-6 py-3 bg-amber-500 text-white font-semibold rounded-lg hover:bg-amber-400 transition-colors"
+          >
+            Log In to Continue
+          </a>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-12">
