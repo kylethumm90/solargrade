@@ -122,6 +122,12 @@ export default async function HomePage() {
               Write a Review
             </a>
           </div>
+          <p className="mt-6 text-sm text-[#94a3b8]">
+            <a href="/login" className="text-amber-600 hover:text-amber-500 font-medium">
+              Log in
+            </a>
+            {' '}to submit verified reviews
+          </p>
         </div>
       </section>
 
