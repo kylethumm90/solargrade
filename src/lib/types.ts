@@ -20,6 +20,7 @@ export interface Company {
 export interface Review {
   id: string
   company_id: string
+  user_id: string | null
   reviewer_name: string
   company: string | null
   relationship: string | null
@@ -48,9 +49,18 @@ export interface ReviewWithCompany extends Review {
   companies?: { name: string; category: string }
 }
 
+export interface Profile {
+  id: string
+  display_name: string | null
+  company: string | null
+  role: 'user' | 'admin'
+  created_at: string
+}
+
 export interface PendingReview {
   id: string
   company_id: string
+  user_id: string | null
   reviewer_name: string
   company: string | null
   relationship: string | null

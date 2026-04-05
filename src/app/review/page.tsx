@@ -77,6 +77,7 @@ export default function ReviewPage() {
       relationship: isInstaller ? relationship : null,
       ratings,
       review_text: reviewText,
+      user_id: user?.id || null,
     })
 
     if (submitError) {
