@@ -19,21 +19,61 @@ export function generateMetadata({ params }: PageProps): Metadata {
   }
 }
 
+function renderInline(text: string): React.ReactNode {
+  const regex = /\*\*([^*]+)\*\*|\[([^\]]+)\]\(([^)]+)\)|\*([^*\n]+)\*/g
+  const nodes: React.ReactNode[] = []
+  let lastIndex = 0
+  let key = 0
+  let match: RegExpExecArray | null
+  while ((match = regex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      nodes.push(text.slice(lastIndex, match.index))
+    }
+    if (match[1] !== undefined) {
+      nodes.push(<strong key={key++}>{match[1]}</strong>)
+    } else if (match[2] !== undefined && match[3] !== undefined) {
+      const href = match[3]
+      const external = /^https?:\/\//.test(href)
+      nodes.push(
+        <a
+          key={key++}
+          href={href}
+          className="text-amber-600 hover:text-amber-500 underline"
+          target={external ? '_blank' : undefined}
+          rel={external ? 'noopener noreferrer' : undefined}
+        >
+          {match[2]}
+        </a>,
+      )
+    } else if (match[4] !== undefined) {
+      nodes.push(<em key={key++}>{match[4]}</em>)
+    }
+    lastIndex = regex.lastIndex
+  }
+  if (lastIndex < text.length) {
+    nodes.push(text.slice(lastIndex))
+  }
+  return nodes.length > 0 ? nodes : text
+}
+
 function renderContent(content: string) {
   const blocks = content.split(/\n\n+/)
   return blocks.map((block, i) => {
     const trimmed = block.trim()
+    if (trimmed === '---') {
+      return <hr key={i} className="my-10 border-t border-[#e2e8f0]" />
+    }
     if (trimmed.startsWith('## ')) {
       return (
         <h2 key={i} className="text-2xl font-bold text-[#1e293b] mt-10 mb-4">
-          {trimmed.replace(/^##\s+/, '')}
+          {renderInline(trimmed.replace(/^##\s+/, ''))}
         </h2>
       )
     }
     if (trimmed.startsWith('# ')) {
       return (
         <h1 key={i} className="text-3xl font-bold text-[#1e293b] mt-10 mb-4">
-          {trimmed.replace(/^#\s+/, '')}
+          {renderInline(trimmed.replace(/^#\s+/, ''))}
         </h1>
       )
     }
@@ -42,14 +82,14 @@ function renderContent(content: string) {
       return (
         <ul key={i} className="list-disc pl-6 space-y-2 my-4 text-[#475569] leading-relaxed">
           {items.map((item, j) => (
-            <li key={j}>{item}</li>
+            <li key={j}>{renderInline(item)}</li>
           ))}
         </ul>
       )
     }
     return (
       <p key={i} className="text-[#475569] leading-relaxed my-4">
-        {trimmed}
+        {renderInline(trimmed)}
       </p>
     )
   })
