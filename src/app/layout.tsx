@@ -38,6 +38,9 @@ export default function RootLayout({
               <a href="/how-it-works" className="text-[#64748b] hover:text-[#1e293b] transition-colors">
                 How It Works
               </a>
+              <a href="/blog" className="text-[#64748b] hover:text-[#1e293b] transition-colors">
+                Blog
+              </a>
               <a href="/review" className="text-[#64748b] hover:text-[#1e293b] transition-colors">
                 Write a Review
               </a>
@@ -56,6 +59,8 @@ export default function RootLayout({
             </p>
             <div className="flex items-center justify-center gap-4 text-xs text-[#64748b]/60 mt-3">
               <a href="/how-it-works" className="hover:text-[#64748b] transition-colors">How It Works</a>
+              <span>&middot;</span>
+              <a href="/blog" className="hover:text-[#64748b] transition-colors">Blog</a>
               <span>&middot;</span>
               <a href="/terms" className="hover:text-[#64748b] transition-colors">Terms of Service</a>
               <span>&middot;</span>
